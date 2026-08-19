@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  user
+  manager
+  admin
+}
+
+enum Theme {
+  light
+  dark
+}
+
+model User {
+  id                           String    @id @default(uuid())
+  name                         String    @db.VarChar(72)
+  email                        String    @unique
+  phoneIsoCode                 String
+  phoneCountryCode             String
+  phoneInternationalNumber     String
+  timezone                     String
+  theme                        Theme     @default(light)
+  password                     String
+  role                         Role      @default(user)
+  canManageUsers               Boolean   @default(false)
+  permissionOverrides          Json?
+  reportsToId                  String?
+  reportsTo                    User?     @relation("UserReports", fields: [reportsToId], references: [id])
+  directReports                User[]    @relation("UserReports")
+  locations                    UserLocation[]
+  consent                      Boolean   @default(false)
+  accountConfirmationStatus    Boolean   @default(false)
+  accountConfirmationToken     String
+  accountConfirmationCode      String
+  accountConfirmationTimestamp DateTime?
+  passwordResetToken           String?
+  passwordResetExpiry          BigInt?
+  passwordResetLastResetAt     DateTime?
+  refreshToken                 String?
+  lastLoginAt                  DateTime?
+  createdAt                    DateTime  @default(now())
+  updatedAt                    DateTime  @updatedAt
+  createdTaskTemplates  TaskTemplate[]          @relation("TaskTemplateCreator")
+  taskTemplateAssignees TaskTemplateAssignee[]
+  notifications         TaskNotification[]
+  completedTaskItems    TaskInstanceItem[]    @relation("ItemCompletedBy")
+
+  @@unique([phoneCountryCode, phoneInternationalNumber])
+  @@index([reportsToId])
+  @@map("users")
+}
+
+model Location {
+  id        String         @id @default(uuid())
+  name      String         @db.VarChar(120)
+  address   String?        @db.VarChar(255)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  users         UserLocation[]
+  holidays      Holiday[]
+  taskTemplates TaskTemplate[]
+  taskInstances TaskInstance[]
+
+  @@map("locations")
+}
+
+model UserLocation {
+  userId     String
+  locationId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, locationId])
+  @@map("user_locations")
+}
+
+model Holiday {
+  id          String    @id @default(uuid())
+  locationId  String?
+  date        String    @db.Char(10)
+  description String?   @db.VarChar(160)
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([locationId, date])
+  @@index([date])
+  @@map("holidays")
+}
+
+model RolePermission {
+  id        String   @id @default(uuid())
+  role      Role
+  module    String   @db.VarChar(40)
+  canView   Boolean  @default(false)
+  canCreate Boolean  @default(false)
+  canEdit   Boolean  @default(false)
+  canDelete Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([role, module])
+  @@map("role_permissions")
+}
+
+enum TaskPriority {
+  high
+  medium
+  low
+}
+
+enum TaskKind {
+  one_time
+  recurring
+}
+
+enum TaskRecurrence {
+  daily
+  weekly
+  custom
+}
+
+enum TaskInstanceStatus {
+  pending
+  done_on_time
+  done_late
+  overdue
+  skipped_holiday
+}
+
+model TaskTemplate {
+  id            String                  @id @default(uuid())
+  title         String                  @db.VarChar(160)
+  locationId    String
+  priority      TaskPriority            @default(medium)
+  kind          TaskKind
+  recurrence    TaskRecurrence?
+  weekdays      Json?
+  scheduledDate String?                 @db.Char(10)
+  skipOnHoliday Boolean                 @default(true)
+  createdById   String
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  location      Location                @relation(fields: [locationId], references: [id])
+  createdBy     User                    @relation("TaskTemplateCreator", fields: [createdById], references: [id])
+  assignees     TaskTemplateAssignee[]
+  items         TaskTemplateItem[]
+  instances     TaskInstance[]
+
+  @@index([locationId])
+  @@index([createdById])
+  @@index([kind])
+  @@map("task_templates")
+}
+
+model TaskTemplateItem {
+  id         String       @id @default(uuid())
+  templateId String
+  title      String       @db.VarChar(160)
+  dueTime    String       @db.VarChar(5)
+  sortOrder  Int          @default(0)
+  template   TaskTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId])
+  @@map("task_template_items")
+}
+
+model TaskTemplateAssignee {
+  templateId String
+  userId     String
+  template   TaskTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([templateId, userId])
+  @@index([userId])
+  @@map("task_template_assignees")
+}
+
+model TaskInstance {
+  id            String                  @id @default(uuid())
+  templateId    String
+  locationId    String
+  scheduledDate String                  @db.Char(10)
+  dueAt         DateTime
+  overdueAt     DateTime
+  status        TaskInstanceStatus      @default(pending)
+  skipOnHoliday Boolean                 @default(true)
+  boardX        Float                   @default(4)
+  boardY        Float                   @default(4)
+  boardZ        Int                     @default(0)
+  completedAt   DateTime?
+  note          String?                 @db.Text
+  late          Boolean                 @default(false)
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  template      TaskTemplate            @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  location      Location                @relation(fields: [locationId], references: [id])
+  items         TaskInstanceItem[]
+  photos        TaskInstancePhoto[]
+  notifications TaskNotification[]
+
+  @@unique([templateId, scheduledDate])
+  @@index([scheduledDate])
+  @@index([status])
+  @@index([overdueAt])
+  @@map("task_instances")
+}
+
+model TaskInstanceItem {
+  id          String             @id @default(uuid())
+  instanceId  String
+  title       String             @db.VarChar(160)
+  dueTime     String             @db.VarChar(5)
+  sortOrder   Int                @default(0)
+  dueAt       DateTime
+  overdueAt   DateTime
+  status      TaskInstanceStatus @default(pending)
+  completedAt DateTime?
+  note        String?            @db.Text
+  late          Boolean            @default(false)
+  completedById String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  instance      TaskInstance       @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  completedBy   User?              @relation("ItemCompletedBy", fields: [completedById], references: [id], onDelete: SetNull)
+  photos        TaskInstancePhoto[]
+  notifications TaskNotification[]
+
+  @@index([instanceId])
+  @@index([completedById])
+  @@map("task_instance_items")
+}
+
+model TaskInstancePhoto {
+  id             String            @id @default(uuid())
+  instanceId     String
+  instanceItemId String?
+  url            String            @db.VarChar(500)
+  publicId       String            @db.VarChar(255)
+  createdAt      DateTime          @default(now())
+  instance       TaskInstance      @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceItem   TaskInstanceItem? @relation(fields: [instanceItemId], references: [id], onDelete: Cascade)
+
+  @@index([instanceId])
+  @@index([instanceItemId])
+  @@map("task_instance_photos")
+}
+
+model TaskNotification {
+  id             String           @id @default(uuid())
+  recipientId    String
+  instanceId     String
+  instanceItemId String
+  message        String           @db.VarChar(500)
+  resolved       Boolean          @default(false)
+  resolvedAt     DateTime?
+  createdAt      DateTime         @default(now())
+  recipient      User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  instance       TaskInstance     @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceItem   TaskInstanceItem @relation(fields: [instanceItemId], references: [id], onDelete: Cascade)
+
+  @@unique([recipientId, instanceItemId])
+  @@index([recipientId, resolved])
+  @@index([instanceId])
+  @@index([instanceItemId])
+  @@map("task_notifications")
+}

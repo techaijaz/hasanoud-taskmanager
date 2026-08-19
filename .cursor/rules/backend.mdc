@@ -1,0 +1,16 @@
+﻿---
+description: Backend Express/Prisma conventions for FREGOPS API
+globs: src/**/*.js
+alwaysApply: false
+---
+
+# Backend conventions
+
+- ESM (`import`/`export`); entry: `src/server.js`, app: `src/app.js`.
+- New endpoints: `router` → `controller` → `service`; mount under `/api/v1` via `apiRouter.js`.
+- Success: `httpResponse(req, res, status, message, data)`; errors: `httpError` + global handler.
+- Validate inputs with existing Joi/`validationService` patterns.
+- Shopify webhooks: raw body on `/api/v1/webhooks/shopify*`, verify HMAC, handle idempotently.
+- Prisma enums already define `OrderStatus`, `PaymentStatus`, `ShipmentStatus`, `SourceType`, `Role` — reuse them; do not invent parallel status strings.
+- Protect routes with `authentication` + `authorizeRoles(...)` as neighboring routes do.
+- Cron reconciliation lives in `server.js` via `shopifySyncService.syncOrders`.

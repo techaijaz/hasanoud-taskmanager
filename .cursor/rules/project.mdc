@@ -1,0 +1,46 @@
+﻿---
+description: FREGOPS product context, stack, phases, and always-on conventions
+alwaysApply: true
+---
+
+# FREGOPS (Fragrance Ops)
+
+Internal ops app for a perfume **decanting** business. Replaces Google Sheets. Shopify storefront stays as-is; this app is owner/operator tooling only. Currency: **INR**. Single warehouse.
+
+## Product model
+
+- Two-layer inventory: **source bottles** (batches in ml) → **decant stock** (sellable size variants in real ml, Shopify-style).
+- Orders mainly from **Shopify** webhooks (+ manual / other channels). Shipping via **ShipRocket**.
+- Order lifecycle: `NEW → CONFIRMED | NEEDS_DECANTING → PACKED → SHIPPED → DELIVERED | RTO | RETURNED | CANCELLED`.
+- Customer returns (post-delivery): `order_returns` OPEN → RECEIVED → REFUNDED; distinct from RTO.
+- Finance: vendor ledger, expenses, order charges (shipping/gateway), COD remittances, P&L.
+
+## Build phases (do not jump ahead unless asked)
+
+1. Shopify order/product sync + two-layer inventory + decanting log
+2. ShipRocket (AWB, tracking, labels)
+3. Accounts (vendors, expenses, charges, P&L)
+4. Reports + polish
+
+## Stack
+
+- Backend: Node.js ESM + Express + Prisma + MySQL (`src/`)
+- Frontend: React 19 + Vite + Tailwind 4 + React Query + React Router (`client/src/`)
+- Auth: JWT cookies; roles `admin` | `manager` | `user`; public signup disabled
+- Integrations: Shopify Admin API + webhooks (HMAC); ShipRocket API
+- Hosting: VPS + PM2; prod serves `client/dist` from Express
+
+## Layout
+
+- `src/controller` → `src/service` → Prisma; routes in `src/router` mounted at `/api/v1`
+- `prisma/schema.prisma` — source of truth for models/enums
+- `client/src/pages` — Dashboard, Orders, Products, Inventory, Vendors, Shipping, Accounts, Reports, Users, Settings
+- Spec doc: `perfume-decanting-app-prd-trd.md` (only @ when product/requirements needed)
+
+## Hard rules
+
+- Never commit or paste secrets; `.env*` is ignored — ask for var *names*, not values.
+- Prefer matching existing patterns (httpResponse/httpError, Joi validation, Winston logger).
+- Ops UI: dense tables, status badges, few clicks — not a marketing site.
+- Keep changes scoped; do not refactor unrelated code.
+- Skip reading `node_modules`, `dist`, `logs`, lockfiles.

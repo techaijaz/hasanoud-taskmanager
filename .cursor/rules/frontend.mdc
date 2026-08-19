@@ -1,0 +1,13 @@
+﻿---
+description: React client conventions for Task Manager
+globs: client/src/**/*.{js,jsx,css}
+alwaysApply: false
+---
+
+# Frontend conventions
+
+- Vite + React (JS) in `client/`; port 5173.
+- Tailwind + shadcn (`client/src/components/ui`). API via `axiosInstance` (`withCredentials`, refresh queue). Do not add a second HTTP client.
+- Auth cookies only — no Bearer token, no Redux persist.
+- Routing: Task Board, Task List, Setting, Report. Settings nested: Profile, Users, Permissions, Locations, Holiday, Notification.
+- English UI. Do not copy FREGOPS screens.

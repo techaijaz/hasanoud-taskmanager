@@ -1,0 +1,7 @@
+>Development
+docker build -t backend-app:dev -f docker/development/Dockerfile .
+docker run --rm -it -v ${PWD}:/user/src/backent-app -v /usr/src/backent-app/node_modules -p 8080:8080 backend-app:dev
+
+>Production
+docker build -t backend-app:dev -f docker/production/Dockerfile .
+docker run --rm -D -v ${PWD}:/user/src/backent-app -v /usr/src/backent-app/node_modules -p 8080:8080 backend-app:1.0.0
