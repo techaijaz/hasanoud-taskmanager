@@ -20,8 +20,17 @@ export default {
     // Frontend
     FRONTEND_URL: process.env.FRONTEND_URL,
 
-    // Email service
+    // Email service — set EMAIL_PROVIDER to "smtp" or "resend"
+    EMAIL_PROVIDER: process.env.EMAIL_PROVIDER || 'smtp',
     EMAIL_SERVICE_API_KEY: process.env.EMAIL_SERVICE_API_KEY,
+    RESEND_FROM: process.env.RESEND_FROM || 'onboarding@resend.dev',
+    SMTP: {
+        HOST: process.env.SMTP_HOST || 'smtp.hostinger.com',
+        PORT: Number(process.env.SMTP_PORT) || 465,
+        USER: process.env.SMTP_USER,
+        PASS: process.env.SMTP_PASS,
+        FROM: process.env.SMTP_FROM
+    },
 
     // Access Token
     ACCESS_TOKEN: {

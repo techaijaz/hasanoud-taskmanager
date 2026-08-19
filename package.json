@@ -60,6 +60,7 @@
         "libphonenumber-js": "^1.11.14",
         "multer": "^2.2.0",
         "mysql2": "^3.22.3",
+        "nodemailer": "^9.0.5",
         "rate-limiter-flexible": "^5.0.4",
         "resend": "^4.0.1-alpha.0",
         "uuid": "^11.0.3",

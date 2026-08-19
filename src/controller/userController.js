@@ -233,7 +233,7 @@ export default {
             const resetlURL = `${config.FRONTEND_URL}/reset-password/${token}`
             const to = [email]
             const subject = 'Account Password Reset requested'
-            const text = `Hey ${user.name}, Please reset your email by clicking on this link below \n\nLink will expire in 15 minutes.\n\n ${resetlURL}`
+            const text = `Hey ${user.name}, Please reset your password by clicking on the link below.\n\nLink will expire in 15 minutes.\n\n${resetlURL}`
 
             emailService.sendEmail(to, subject, text).catch((error) => logger.error('EMAIL_SERVICE', { meta: error }))
 
@@ -323,7 +323,7 @@ export default {
             // * send email
             const to = [user.email]
             const subject = 'Password changed.'
-            const text = `Hey ${user.name}, Your account password has been change successfully.`
+            const text = `Hey ${user.name}, Your account password has been changed successfully.`
             emailService.sendEmail(to, subject, text).catch((error) => {
                 logger.error('EMAIL_SERVICE', { meta: error })
             })
