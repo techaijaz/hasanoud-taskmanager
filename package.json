@@ -1,5 +1,5 @@
 {
-    "name": "js-backend-auth-mysql",
+    "name": "hasanoud-task-management-system-api",
     "version": "1.0.0",
     "description": "Hasanoud Task management system API",
     "main": "src/server.js",

@@ -164,7 +164,7 @@ export default function UsersPage() {
                     {hasCustomPerms(row.permissionOverrides) ? <Badge variant="outline">Extra perms</Badge> : null}
                   </div>
                 </td>
-                <td className="px-3 py-2 text-muted-foreground">{row.reportsTo?.name || '—'}</td>
+                <td className="px-3 py-2 text-muted-foreground">{row.reportsTo?.name || '-'}</td>
                 <td className="px-3 py-2 text-right">
                   <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
                     <Pencil className="h-4 w-4" />
@@ -259,7 +259,7 @@ export default function UsersPage() {
                 Cancel
               </Button>
               <Button type="submit" disabled={saving}>
-                {saving ? 'Saving…' : 'Save'}
+                {saving ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </form>
