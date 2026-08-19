@@ -42,7 +42,7 @@ model User {
   passwordResetToken           String?
   passwordResetExpiry          BigInt?
   passwordResetLastResetAt     DateTime?
-  refreshToken                 String?
+  refreshToken                 String?   @db.Text
   lastLoginAt                  DateTime?
   createdAt                    DateTime  @default(now())
   updatedAt                    DateTime  @updatedAt
