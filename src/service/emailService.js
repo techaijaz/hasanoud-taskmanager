@@ -50,12 +50,16 @@ const getSmtpTransporter = () => {
 
 const sendViaResend = async (to, subject, text) => {
     assertResendConfig()
-    return resend.emails.send({
+    const result = await resend.emails.send({
         from: config.RESEND_FROM,
         to: normalizeRecipients(to),
         subject,
         html: toHtml(text)
     })
+    if (result?.error) {
+        throw new Error(result.error.message || JSON.stringify(result.error))
+    }
+    return result
 }
 
 const sendViaSmtp = async (to, subject, text) => {

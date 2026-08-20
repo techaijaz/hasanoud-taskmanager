@@ -235,7 +235,9 @@ export default {
             const subject = 'Account Password Reset requested'
             const text = `Hey ${user.name}, Please reset your password by clicking on the link below.\n\nLink will expire in 15 minutes.\n\n${resetlURL}`
 
-            emailService.sendEmail(to, subject, text).catch((error) => logger.error('EMAIL_SERVICE', { meta: error }))
+            emailService.sendEmail(to, subject, text).catch((error) =>
+                logger.error('EMAIL_SERVICE', { meta: { message: error?.message, stack: error?.stack } })
+            )
 
             httpResponse(req, res, 200, responceMessage.SUCCESS, null)
         } catch (error) {
