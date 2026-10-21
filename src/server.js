@@ -19,6 +19,15 @@ const syncMissedTasks = async () => {
     }
 }
 
+// Startup failures also go to stderr: the file logger is the only transport in production,
+// so without this `pm2 logs` shows nothing while the app crash-loops
+const reportFatal = (label, error) => {
+    // Prisma/mariadb nest the real reason (e.g. ECONNREFUSED, Access denied) a few levels down
+    const driverCause = error?.meta?.driverAdapterError?.cause || error?.cause
+    const reason = String(driverCause?.cause || driverCause?.message || error?.message || error).trim()
+    process.stderr.write(`[${new Date().toISOString()}] ${label}: ${reason}\n`)
+}
+
 const server = app.listen(config.PORT, () => {
     logger.info('APPLICATION STARTED', {
         meta: {
@@ -26,6 +35,12 @@ const server = app.listen(config.PORT, () => {
             SERVER_URL: config.SERVER_URL
         }
     })
+})
+
+server.on('error', (error) => {
+    logger.error('SERVER LISTEN ERROR', { meta: error })
+    reportFatal('SERVER LISTEN ERROR', error)
+    process.exit(1)
 })
 
 ;(async () => {
@@ -44,6 +59,7 @@ const server = app.listen(config.PORT, () => {
         logger.info('MISSED TASK SYNC READY')
     } catch (error) {
         logger.error('APPLICATION START ERROR', { meta: error })
+        reportFatal('APPLICATION START ERROR', error)
         server.close(() => {
             process.exit(1)
         })

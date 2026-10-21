@@ -41,6 +41,8 @@ export default {
     connect: async () => {
         try {
             await prisma.$connect()
+            // $connect is lazy with driver adapters; run a real query so bad credentials fail here
+            await prisma.$queryRaw`SELECT 1`
             return prisma
         } catch (error) {
             throw error

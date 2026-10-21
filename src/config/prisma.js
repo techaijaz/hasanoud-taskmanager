@@ -13,7 +13,11 @@ const adapter = new PrismaMariaDb({
     connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 5,
     queueLimit: 50,
     connectTimeout,
-    acquireTimeout: connectTimeout + 5000
+    acquireTimeout: connectTimeout + 5000,
+    // MySQL 8 users with caching_sha2_password need the server's RSA key for a full
+    // (non-cached) password login over plain TCP — e.g. right after MySQL restarts.
+    // Without this every connect fails until the pool times out (crash loop under PM2).
+    allowPublicKeyRetrieval: true
 })
 
 const prisma = new PrismaClient({ adapter })
