@@ -1,0 +1,79 @@
+# Hasanoud Task Manager on a shared VPS. See deploy/DEPLOY.md.
+#
+#   host nginx (HTTPS, task.hasanoud.in) -> 127.0.0.1:${HTTP_PORT} -> web (nginx + React build)
+#                                                                  -> /api, /uploads -> api (Express)
+#                                                                                       -> mysql
+#
+# Reads secrets from ./.env (copy .env.docker.example). Compose refuses to start if a required
+# variable (marked :?) is missing. Only `web` publishes a port, and only on 127.0.0.1.
+# Data lives in ./data (mysql, uploads, logs) next to this file, so the whole app is one folder.
+#
+# The API runs as exactly one container: the rate limiter, permission cache and the
+# missed-task sync job are in-process, so do not scale `api`.
+
+name: ${COMPOSE_PROJECT_NAME:-hasanoud-production}
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:?Set DB_NAME in .env}
+      MYSQL_USER: ${DB_USER:?Set DB_USER in .env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *logging
+
+  api:
+    build: .
+    image: hasanoud-taskmanager-api:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DB_HOST: mysql
+      DB_PORT: 3306
+      # Empty on purpose: prisma.config.ts then builds the URL from DB_* (and URL-encodes the password)
+      DATABASE_URL: ''
+      # Requests arrive via host nginx -> web container; both are on loopback/private ranges
+      TRUST_PROXY: loopback, uniquelocal
+      SERVER_URL: https://${DOMAIN:?Set DOMAIN in .env}
+      FRONTEND_URL: https://${DOMAIN}
+    volumes:
+      - ./data/uploads:/app/uploads
+      - ./data/logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8080/api/v1/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    logging: *logging
+
+  web:
+    build: ./client
+    image: hasanoud-taskmanager-web:local
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${HTTP_PORT:-8100}:80'
+    depends_on:
+      - api
+    logging: *logging
