@@ -1,13 +1,25 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible'
 
-export let rateLimiter = null
+// General API traffic: many staff can share one office IP (NAT), and the
+// client polls notifications every 30s, so this limit must stay generous.
+export let apiRateLimiter = null
+const API_POINTS = 300
+const API_DURATION = 60
 
-const DURATION = 60
-const POINTS = 10
+// Credential endpoints (login, password reset): strict to slow brute force.
+export let authRateLimiter = null
+const AUTH_POINTS = 10
+const AUTH_DURATION = 60
 
 export const initRateLimiter = () => {
-    rateLimiter = new RateLimiterMemory({
-        points: POINTS,
-        duration: DURATION
+    apiRateLimiter = new RateLimiterMemory({
+        keyPrefix: 'api',
+        points: API_POINTS,
+        duration: API_DURATION
+    })
+    authRateLimiter = new RateLimiterMemory({
+        keyPrefix: 'auth',
+        points: AUTH_POINTS,
+        duration: AUTH_DURATION
     })
 }

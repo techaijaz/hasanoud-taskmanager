@@ -13,6 +13,9 @@ const __dirname = path.dirname(__filename)
 
 const app = express()
 
+// Behind nginx, req.ip must come from X-Forwarded-For or every user shares the proxy IP
+app.set('trust proxy', config.TRUST_PROXY)
+
 // Middlewares
 app.use(helmet())
 app.use(cookieParser())

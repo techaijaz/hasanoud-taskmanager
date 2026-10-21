@@ -16,6 +16,10 @@ router
     .patch(authorizePermission('taskList', 'canEdit'), taskTemplateController.patchSkipOnHoliday)
 
 router
+    .route('/:id/deactivate')
+    .patch(authorizePermission('taskList', 'canDelete'), taskTemplateController.deactivateTemplate)
+
+router
     .route('/:id')
     .put(authorizePermission('taskList', 'canEdit'), taskTemplateController.updateTemplate)
     .delete(authorizePermission('taskList', 'canDelete'), taskTemplateController.deleteTemplate)

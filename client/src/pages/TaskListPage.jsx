@@ -77,13 +77,14 @@ export default function TaskListPage() {
   const [options, setOptions] = useState({ users: [], locations: [], hasReportees: false, defaultAssigneeIds: [] })
   const [kindFilter, setKindFilter] = useState('all')
   const [locationFilter, setLocationFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('active')
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
 
-  const load = (kind = kindFilter, locationId = locationFilter) => {
-    const params = {}
+  const load = (kind = kindFilter, locationId = locationFilter, status = statusFilter) => {
+    const params = { status }
     if (kind && kind !== 'all') params.kind = kind
     if (locationId && locationId !== 'all') params.locationId = locationId
     taskTemplatesApi
@@ -91,6 +92,8 @@ export default function TaskListPage() {
       .then(setRows)
       .catch((error) => toast.error(apiMessage(error)))
   }
+
+  const isInactiveView = statusFilter === 'inactive'
 
   useEffect(() => {
     taskTemplatesApi
@@ -196,7 +199,7 @@ export default function TaskListPage() {
           <h2 className="text-xl font-semibold">Task List</h2>
           <p className="mt-1 text-sm text-muted-foreground">Main tasks for today. Status updates as sub tasks are completed.</p>
         </div>
-        {can('taskList', 'canCreate') && (
+        {can('taskList', 'canCreate') && !isInactiveView && (
           <Button onClick={openCreate} disabled={!options.locations.length}>
             <Plus className="h-4 w-4" />
             Add task
@@ -205,11 +208,35 @@ export default function TaskListPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
+        <div className="flex rounded-md border p-0.5">
+          <Button
+            type="button"
+            variant={statusFilter === 'active' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => {
+              setStatusFilter('active')
+              load(kindFilter, locationFilter, 'active')
+            }}
+          >
+            Active
+          </Button>
+          <Button
+            type="button"
+            variant={statusFilter === 'inactive' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => {
+              setStatusFilter('inactive')
+              load(kindFilter, locationFilter, 'inactive')
+            }}
+          >
+            Inactive
+          </Button>
+        </div>
         <Select
           value={kindFilter}
           onValueChange={(value) => {
             setKindFilter(value)
-            load(value, locationFilter)
+            load(value, locationFilter, statusFilter)
           }}
         >
           <SelectTrigger className="w-40">
@@ -225,7 +252,7 @@ export default function TaskListPage() {
           value={locationFilter}
           onValueChange={(value) => {
             setLocationFilter(value)
-            load(kindFilter, value)
+            load(kindFilter, value, statusFilter)
           }}
         >
           <SelectTrigger className="w-48">
@@ -243,7 +270,11 @@ export default function TaskListPage() {
       </div>
 
       <div className="grid gap-3">
-        {rows.length === 0 && <p className="rounded-lg border px-4 py-8 text-center text-sm text-muted-foreground">No tasks yet.</p>}
+        {rows.length === 0 && (
+          <p className="rounded-lg border px-4 py-8 text-center text-sm text-muted-foreground">
+            {isInactiveView ? 'No inactive tasks.' : 'No tasks yet.'}
+          </p>
+        )}
         {rows.map((row) => {
           const status = row.todayStatus
           const meta = status ? statusMeta[status.key] : null
@@ -257,6 +288,7 @@ export default function TaskListPage() {
                   <Badge variant={priorityVariant(row.priority)}>{row.priority}</Badge>
                   {meta && <Badge variant={meta.variant}>{statusLabel}</Badge>}
                   {row.locked && <Badge variant="secondary">Locked</Badge>}
+                  {isInactiveView && <Badge variant="secondary">Inactive</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {row.location?.name} · {recurrenceLabel(row)}
@@ -269,42 +301,54 @@ export default function TaskListPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuCheckboxItem
-                    checked={row.skipOnHoliday}
-                    disabled={row.locked || !can('taskList', 'canEdit')}
-                    onCheckedChange={async (checked) => {
-                      try {
-                        await taskTemplatesApi.setSkipOnHoliday(row.id, checked)
-                        load()
-                      } catch (error) {
-                        toast.error(apiMessage(error))
-                      }
-                    }}
-                    onSelect={(event) => event.preventDefault()}
-                  >
-                    Skip on holiday
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuSeparator />
-                  {can('taskList', 'canEdit') && (
-                    <DropdownMenuItem disabled={row.locked} onSelect={() => !row.locked && openEdit(row)}>
-                      Edit
-                    </DropdownMenuItem>
+                  {!isInactiveView && (
+                    <>
+                      <DropdownMenuCheckboxItem
+                        checked={row.skipOnHoliday}
+                        disabled={row.locked || !can('taskList', 'canEdit')}
+                        onCheckedChange={async (checked) => {
+                          try {
+                            await taskTemplatesApi.setSkipOnHoliday(row.id, checked)
+                            load()
+                          } catch (error) {
+                            toast.error(apiMessage(error))
+                          }
+                        }}
+                        onSelect={(event) => event.preventDefault()}
+                      >
+                        Skip on holiday
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuSeparator />
+                      {can('taskList', 'canEdit') && (
+                        <DropdownMenuItem disabled={row.locked} onSelect={() => !row.locked && openEdit(row)}>
+                          Edit
+                        </DropdownMenuItem>
+                      )}
+                    </>
                   )}
                   {can('taskList', 'canDelete') && (
                     <DropdownMenuItem
                       className="text-destructive"
                       onSelect={async () => {
-                        if (!window.confirm(`Delete “${row.title}”?`)) return
+                        const message = isInactiveView
+                          ? `Permanently delete “${row.title}”? This cannot be undone.`
+                          : `Deactivate “${row.title}”? It will move to Inactive.`
+                        if (!window.confirm(message)) return
                         try {
-                          await taskTemplatesApi.remove(row.id)
-                          toast.success('Deleted')
+                          if (isInactiveView) {
+                            await taskTemplatesApi.remove(row.id)
+                            toast.success('Permanently deleted')
+                          } else {
+                            await taskTemplatesApi.deactivate(row.id)
+                            toast.success('Task deactivated')
+                          }
                           load()
                         } catch (error) {
                           toast.error(apiMessage(error))
                         }
                       }}
                     >
-                      Delete
+                      {isInactiveView ? 'Delete permanently' : 'Deactivate'}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

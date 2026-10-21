@@ -126,7 +126,7 @@ const createInstanceFromTemplate = async (template, ymd) => {
 
 export const generateRecurringForDate = async (ymd) => {
     const templates = await prisma.taskTemplate.findMany({
-        where: { kind: 'recurring' },
+        where: { kind: 'recurring', isActive: true },
         include: { items: { orderBy: { sortOrder: 'asc' } } }
     })
     const due = templates.filter((row) => templateAppliesOnDate(row, ymd))

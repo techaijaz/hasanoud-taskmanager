@@ -80,6 +80,9 @@ const fileTransport = () => {
         new transports.File({
             filename: path.join(__dirname, '../', '../', 'logs', `${config.ENV}.log`),
             level: 'info',
+            maxsize: 10 * 1024 * 1024,
+            maxFiles: 5,
+            tailable: true,
             format: format.combine(format.timestamp(), fileFormate)
         })
     ]

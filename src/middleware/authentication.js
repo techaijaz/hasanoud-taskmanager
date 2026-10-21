@@ -11,13 +11,16 @@ export default async (req, res, next) => {
 
         if (accessToken) {
             try {
-                const { userId } = quiker.verifyToken(accessToken, config.ACCESS_TOKEN.SECRET)
+                const { userId, iat } = quiker.verifyToken(accessToken, config.ACCESS_TOKEN.SECRET)
                 const user = await databaseService.findUserById(userId)
-                if (user) {
+                // Tokens issued before the last password reset/change are revoked
+                const passwordChangedAt = user?.passwordResetLastResetAt
+                const revoked = passwordChangedAt && iat < Math.floor(new Date(passwordChangedAt).getTime() / 1000)
+                if (user && !revoked) {
                     req.authenticatedUser = user
                     return next()
                 }
-            } catch (err) {
+            } catch {
                 // Token verification failed
             }
         }

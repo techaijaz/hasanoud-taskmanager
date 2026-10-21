@@ -29,12 +29,17 @@ export const getTemplates = async (req, res, next) => {
     try {
         const kind = req.query.kind
         const locationId = req.query.locationId
+        const status = req.query.status
         if (kind && !['one_time', 'recurring'].includes(kind)) {
             return httpError(next, new Error('Invalid type filter'), req, 422)
         }
+        if (status && !['active', 'inactive'].includes(status)) {
+            return httpError(next, new Error('Invalid status filter'), req, 422)
+        }
         const templates = await taskTemplateService.listTemplates(req.authenticatedUser, {
             kind: kind || undefined,
-            locationId: locationId || undefined
+            locationId: locationId || undefined,
+            status: status || 'active'
         })
         httpResponse(req, res, 200, responseMessage.SUCCESS, templates)
     } catch (error) {
@@ -87,9 +92,21 @@ export const patchSkipOnHoliday = async (req, res, next) => {
     }
 }
 
+export const deactivateTemplate = async (req, res, next) => {
+    try {
+        const deactivated = await taskTemplateService.deactivateTemplate(req.authenticatedUser, req.params.id)
+        if (!deactivated) {
+            return httpError(next, new Error(responseMessage.NOT_FOUND('Task')), req, 404)
+        }
+        httpResponse(req, res, 200, responseMessage.SUCCESS, null)
+    } catch (error) {
+        handleServiceError(error, req, next)
+    }
+}
+
 export const deleteTemplate = async (req, res, next) => {
     try {
-        const deleted = await taskTemplateService.deleteTemplate(req.authenticatedUser, req.params.id)
+        const deleted = await taskTemplateService.permanentlyDeleteTemplate(req.authenticatedUser, req.params.id)
         if (!deleted) {
             return httpError(next, new Error(responseMessage.NOT_FOUND('Task')), req, 404)
         }

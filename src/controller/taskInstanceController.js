@@ -3,6 +3,7 @@ import responseMessage from '../constant/responseMessage.js'
 import httpError from '../util/httpError.js'
 import { validateJoiSchema, validationInstanceSkipBody, validationBoardPlaceBody } from '../service/validationService.js'
 import * as taskInstanceService from '../service/taskInstanceService.js'
+import * as cloudinaryService from '../service/cloudinaryService.js'
 import { isValidYmd } from '../util/ist.js'
 import config from '../config/config.js'
 
@@ -13,9 +14,39 @@ const handleServiceError = (error, req, next) => {
     return httpError(next, error, req, 500)
 }
 
-const publicUrl = (filename) => {
+const localPublicUrl = (filename) => {
     const base = (config.SERVER_URL || '').replace(/\/$/, '')
     return `${base}/uploads/task-proofs/${filename}`
+}
+
+const mapLocalPhotos = (files) =>
+    files.map((file) => ({
+        url: localPublicUrl(file.filename),
+        publicId: `local:${file.filename}`
+    }))
+
+const mapCloudinaryPhotos = async (files) => {
+    const uploads = await Promise.all(
+        files.map((file) =>
+            cloudinaryService.uploadImage(file.buffer, {
+                folder: config.CLOUDINARY.FOLDER
+            })
+        )
+    )
+    return uploads.map((result) => ({
+        url: result.secure_url,
+        publicId: result.public_id
+    }))
+}
+
+const resolveProofPhotos = async (files) => {
+    if (config.UPLOAD_PROVIDER === 'local') {
+        return mapLocalPhotos(files)
+    }
+    if (!cloudinaryService.isCloudinaryConfigured()) {
+        throw Object.assign(new Error('Cloudinary is not configured'), { statusCode: 500 })
+    }
+    return mapCloudinaryPhotos(files)
 }
 
 export const getInstances = async (req, res, next) => {
@@ -54,10 +85,7 @@ export const patchSkipOnHoliday = async (req, res, next) => {
 export const completeInstanceItem = async (req, res, next) => {
     try {
         const files = req.files || []
-        const photos = files.map((file) => ({
-            url: publicUrl(file.filename),
-            publicId: `local:${file.filename}`
-        }))
+        const photos = await resolveProofPhotos(files)
         const instance = await taskInstanceService.completeInstanceItem(
             req.authenticatedUser,
             req.params.id,

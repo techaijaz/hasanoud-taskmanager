@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { authApi } from '@/lib/api'
 import { apiMessage } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -58,11 +58,11 @@ export default function ProfilePage() {
           <form className="max-w-sm space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <Label>Current password</Label>
-              <Input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required />
+              <PasswordInput value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required />
             </div>
             <div className="space-y-2">
               <Label>New password</Label>
-              <Input type="password" minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+              <PasswordInput minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
             </div>
             <Button type="submit" disabled={saving}>
               Update

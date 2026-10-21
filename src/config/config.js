@@ -2,11 +2,26 @@ import dotenvFlow from 'dotenv-flow'
 
 dotenvFlow.config()
 
+// Express "trust proxy": hop count, true/false, or a list like "loopback, 10.0.0.0/8".
+// Default trusts only a reverse proxy on the same host (e.g. nginx on 127.0.0.1).
+const parseTrustProxy = (value) => {
+    if (value === undefined || value === '') return 'loopback'
+    if (value === 'true') return true
+    if (value === 'false') return false
+    if (/^\d+$/.test(value)) return Number(value)
+    return value
+}
+
+const cloudinaryConfigured = Boolean(
+    process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
+)
+
 export default {
     // General
     ENV: process.env.NODE_ENV,
     PORT: process.env.PORT || 8080,
     SERVER_URL: process.env.SERVER_URL,
+    TRUST_PROXY: parseTrustProxy(process.env.TRUST_PROXY),
 
     // Database
     DB: {
@@ -42,5 +57,14 @@ export default {
     REFRESH_TOKEN: {
         SECRET: process.env.REFRESH_TOKEN_SECRET,
         EXPIRY: 3600 * 24
+    },
+
+    // Uploads — UPLOAD_PROVIDER: local | cloudinary
+    UPLOAD_PROVIDER: process.env.UPLOAD_PROVIDER || (cloudinaryConfigured ? 'cloudinary' : 'local'),
+    CLOUDINARY: {
+        CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+        API_KEY: process.env.CLOUDINARY_API_KEY,
+        API_SECRET: process.env.CLOUDINARY_API_SECRET,
+        FOLDER: process.env.CLOUDINARY_FOLDER || 'task-proofs'
     }
 }

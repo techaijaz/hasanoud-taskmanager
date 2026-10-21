@@ -42,7 +42,7 @@ export default {
                 isoCode: null,
                 internationalNumber: null
             }
-        } catch (error) {
+        } catch {
             return {
                 countryCode: null,
                 isoCode: null,

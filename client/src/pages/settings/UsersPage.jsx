@@ -30,7 +30,7 @@ const hasCustomPerms = (overrides) => {
 
 export default function UsersPage() {
   const { user: currentUser } = useAuth()
-  const { isAdmin } = usePermissions()
+  const { isAdmin, can } = usePermissions()
   const [users, setUsers] = useState([])
   const [locations, setLocations] = useState([])
   const [open, setOpen] = useState(false)
@@ -136,10 +136,12 @@ export default function UsersPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Users</h2>
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          Add user
-        </Button>
+        {can('users', 'canCreate') && (
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            Add user
+          </Button>
+        )}
       </div>
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
@@ -166,12 +168,16 @@ export default function UsersPage() {
                 </td>
                 <td className="px-3 py-2 text-muted-foreground">{row.reportsTo?.name || '-'}</td>
                 <td className="px-3 py-2 text-right">
-                  <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => remove(row)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {can('users', 'canEdit') && (
+                    <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {can('users', 'canDelete') && (
+                    <Button variant="ghost" size="icon" onClick={() => remove(row)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

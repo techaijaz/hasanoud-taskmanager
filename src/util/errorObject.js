@@ -22,10 +22,18 @@ export default (error, req, errorStatusCode = 500) => {
         trace: error instanceof Error ? { error: error.stack } : null
     }
 
-    // Log
-    logger.info('CONTROLLER_RESPONSE', {
-        meta: errorObj
-    })
+    // Log — skip `data`: it can echo request bodies or Prisma query details
+    const logMeta = {
+        statusCode: errorObj.statusCode,
+        request: { ...errorObj.request },
+        message: errorObj.message
+    }
+    if (errorStatusCode >= 500) {
+        logMeta.trace = errorObj.trace
+        logger.error('CONTROLLER_RESPONSE', { meta: logMeta })
+    } else {
+        logger.info('CONTROLLER_RESPONSE', { meta: logMeta })
+    }
 
     // Production env check
     if (config.ENV === EApplicationEnvironment.PRODUCTION) {

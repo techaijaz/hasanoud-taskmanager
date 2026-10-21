@@ -34,6 +34,18 @@ const resolveLoginUser = async ({ email, phone }) => {
     return databaseService.findUserByPhone(countryCode, internationalNumber)
 }
 
+// * issue a fresh access + refresh token pair as httpOnly cookies; returns the refresh token to persist
+const issueAuthCookies = (res, user) => {
+    const accessToken = quiker.generateToken({ userId: user.id, role: user.role }, config.ACCESS_TOKEN.SECRET, config.ACCESS_TOKEN.EXPIRY)
+    const refreshToken = quiker.generateToken({ userId: user.id, role: user.role }, config.REFRESH_TOKEN.SECRET, config.REFRESH_TOKEN.EXPIRY)
+    res.cookie('accessToken', accessToken, quiker.authCookieOptions(1000 * config.ACCESS_TOKEN.EXPIRY)).cookie(
+        'refreshToken',
+        refreshToken,
+        quiker.authCookieOptions(1000 * config.REFRESH_TOKEN.EXPIRY)
+    )
+    return refreshToken
+}
+
 export default {
     register: async (req, res) => {
         res.status(403).json({
@@ -97,36 +109,15 @@ export default {
                 return httpError(next, new Error(responceMessage.INVALID_CREDENTIALS), req, 404)
             }
             
-            // * generate token
-            const accessToken = quiker.generateToken(
-                { userId: user.id, role: user.role },
-                config.ACCESS_TOKEN.SECRET,
-                config.ACCESS_TOKEN.EXPIRY
-            )
-
-            const refreshToken = quiker.generateToken(
-                { userId: user.id, role: user.role },
-                config.REFRESH_TOKEN.SECRET,
-                config.REFRESH_TOKEN.EXPIRY
-            )
-            
-            // * update last login and refresh token
+            // * generate tokens, update last login and refresh token
+            const refreshToken = issueAuthCookies(res, user)
             await databaseService.updateUser(user.id, {
                 lastLoginAt: dayjs().utc().toDate(),
                 refreshToken: refreshToken
             })
 
-            // * cookie send
-            res.cookie('accessToken', accessToken, quiker.authCookieOptions(1000 * config.ACCESS_TOKEN.EXPIRY)).cookie(
-                'refreshToken',
-                refreshToken,
-                quiker.authCookieOptions(1000 * config.REFRESH_TOKEN.EXPIRY)
-            )
-            
-            httpResponse(req, res, 200, responceMessage.SUCCESS, {
-                accessToken,
-                refreshToken
-            })
+            // * tokens travel only in httpOnly cookies, never in the body
+            httpResponse(req, res, 200, responceMessage.SUCCESS, null)
         } catch (error) {
             httpError(next, error, req, 500)
         }
@@ -171,7 +162,7 @@ export default {
             const { refreshToken, accessToken } = cookies
 
             if (accessToken) {
-                return httpResponse(req, res, 200, responceMessage.SUCCESS, { accessToken })
+                return httpResponse(req, res, 200, responceMessage.SUCCESS, null)
             }
             if (refreshToken) {
                 const user = await databaseService.getRefreshToken(refreshToken)
@@ -186,16 +177,15 @@ export default {
                         userId = null
                     }
 
-                    let newAccessToken = null
                     if (userId) {
-                        newAccessToken = quiker.generateToken(
+                        const newAccessToken = quiker.generateToken(
                             { userId, role },
                             config.ACCESS_TOKEN.SECRET,
                             config.ACCESS_TOKEN.EXPIRY
                         )
                         res.cookie('accessToken', newAccessToken, quiker.authCookieOptions(1000 * config.ACCESS_TOKEN.EXPIRY))
+                        return httpResponse(req, res, 200, responceMessage.SUCCESS, null)
                     }
-                    return httpResponse(req, res, 200, responceMessage.SUCCESS, { accessToken: newAccessToken })
                 }
             }
             return httpError(next, new Error(responceMessage.UNAUTHORIZED), req, 401)
@@ -275,12 +265,14 @@ export default {
 
             const hashedPassword = await quiker.hashedPassword(newPassword)
 
-            // * update password reset token
+            // * update password and end every existing session
+            // * (passwordResetLastResetAt also invalidates access tokens issued before it — see authentication middleware)
             await databaseService.updateUser(user.id, {
                 password: hashedPassword,
                 passwordResetToken: '',
                 passwordResetExpiry: null,
-                passwordResetLastResetAt: dayjs().utc().toDate()
+                passwordResetLastResetAt: dayjs().utc().toDate(),
+                refreshToken: null
             })
 
             // * send email
@@ -318,8 +310,15 @@ export default {
                 return httpError(next, new Error(responceMessage.PASSWORD_MATCHING_WITH_OLD_PASSWORD), req, 400)
             }
             const hashedPassword = await quiker.hashedPassword(newPassword)
+
+            // * end other sessions, keep this one logged in with a fresh token pair
+            // * (timestamp taken before issuing, so the new access token is not older than it)
+            const changedAt = dayjs().utc().toDate()
+            const refreshToken = issueAuthCookies(res, user)
             await databaseService.updateUser(user.id, {
-                password: hashedPassword
+                password: hashedPassword,
+                passwordResetLastResetAt: changedAt,
+                refreshToken
             })
 
             // * send email

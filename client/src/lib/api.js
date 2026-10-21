@@ -45,6 +45,7 @@ export const taskTemplatesApi = {
   create: (payload) => api.post('/task-templates', payload).then(unwrap),
   update: (id, payload) => api.put(`/task-templates/${id}`, payload).then(unwrap),
   setSkipOnHoliday: (id, skipOnHoliday) => api.patch(`/task-templates/${id}/skip-on-holiday`, { skipOnHoliday }).then(unwrap),
+  deactivate: (id) => api.patch(`/task-templates/${id}/deactivate`).then(unwrap),
   remove: (id) => api.delete(`/task-templates/${id}`).then(unwrap)
 }
 

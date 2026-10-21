@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { authApi } from '@/lib/api'
 import { apiMessage } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -39,7 +39,7 @@ export default function ResetPasswordPage() {
           <form className="space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <Label htmlFor="password">New password</Label>
-              <Input id="password" type="password" minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+              <PasswordInput id="password" minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
             </div>
             <Button className="w-full" type="submit" disabled={saving}>
               Save password

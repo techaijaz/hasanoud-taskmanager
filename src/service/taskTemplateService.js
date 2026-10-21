@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.js'
 import { getDescendantIds } from './reportingService.js'
 import { todayIstYmd } from '../util/ist.js'
+import { destroyProofImages } from './cloudinaryService.js'
 import {
     displayStatus,
     generateOneTimeInstance,
@@ -90,6 +91,7 @@ const listWhereForActor = async (actor, filters = {}) => {
     const where = {}
     if (filters.kind) where.kind = filters.kind
     if (filters.locationId) where.locationId = filters.locationId
+    where.isActive = filters.status === 'inactive' ? false : true
 
     if (actor.role === 'admin') return where
 
@@ -262,8 +264,10 @@ const withTodayStatus = async (row) => {
 
 export const listTemplates = async (actor, filters) => {
     const today = todayIstYmd()
-    await generateRecurringForDate(today)
-    await reconcileDate(today)
+    if (filters?.status !== 'inactive') {
+        await generateRecurringForDate(today)
+        await reconcileDate(today)
+    }
     const where = await listWhereForActor(actor, filters)
     const rows = await prisma.taskTemplate.findMany({
         where,
@@ -337,6 +341,9 @@ export const updateTemplate = async (actor, id, payload) => {
     const allowed = await canAccessTemplate(actor, existing)
     if (!allowed) {
         throw Object.assign(new Error('FORBIDDEN_ACCESS: Access denied for your role'), { statusCode: 403 })
+    }
+    if (!existing.isActive) {
+        throw Object.assign(new Error('Inactive tasks cannot be edited'), { statusCode: 422 })
     }
 
     const mapped = await getTemplateById(id)
@@ -432,6 +439,9 @@ export const setSkipOnHoliday = async (actor, id, skipOnHoliday) => {
     if (!allowed) {
         throw Object.assign(new Error('FORBIDDEN_ACCESS: Access denied for your role'), { statusCode: 403 })
     }
+    if (!existing.isActive) {
+        throw Object.assign(new Error('Inactive tasks cannot be updated'), { statusCode: 422 })
+    }
     const mapped = await getTemplateById(id)
     if (mapped.locked) {
         throw Object.assign(new Error('This one-time task is locked after the first Done day'), { statusCode: 422 })
@@ -451,7 +461,7 @@ export const setSkipOnHoliday = async (actor, id, skipOnHoliday) => {
     return getTemplateById(id)
 }
 
-export const deleteTemplate = async (actor, id) => {
+export const deactivateTemplate = async (actor, id) => {
     const existing = await prisma.taskTemplate.findUnique({
         where: { id },
         include: { assignees: true }
@@ -461,6 +471,70 @@ export const deleteTemplate = async (actor, id) => {
     if (!allowed) {
         throw Object.assign(new Error('FORBIDDEN_ACCESS: Access denied for your role'), { statusCode: 403 })
     }
+    if (!existing.isActive) {
+        throw Object.assign(new Error('Task is already inactive'), { statusCode: 422 })
+    }
+
+    const today = todayIstYmd()
+    await prisma.$transaction(async (tx) => {
+        await tx.taskTemplate.update({
+            where: { id },
+            data: { isActive: false, deactivatedAt: new Date() }
+        })
+        await tx.taskInstance.deleteMany({
+            where: {
+                templateId: id,
+                status: { notIn: DONE_STATUSES },
+                scheduledDate: { gte: today }
+            }
+        })
+    })
+
+    return true
+}
+
+const collectPhotoPublicIds = (instances) => {
+    const publicIds = []
+    for (const instance of instances || []) {
+        for (const photo of instance.photos || []) {
+            publicIds.push(photo.publicId)
+        }
+        for (const item of instance.items || []) {
+            for (const photo of item.photos || []) {
+                publicIds.push(photo.publicId)
+            }
+        }
+    }
+    return publicIds
+}
+
+export const permanentlyDeleteTemplate = async (actor, id) => {
+    const existing = await prisma.taskTemplate.findUnique({
+        where: { id },
+        include: {
+            assignees: true,
+            instances: {
+                include: {
+                    photos: { select: { publicId: true } },
+                    items: { include: { photos: { select: { publicId: true } } } }
+                }
+            }
+        }
+    })
+    if (!existing) return null
+    const allowed = await canAccessTemplate(actor, existing)
+    if (!allowed) {
+        throw Object.assign(new Error('FORBIDDEN_ACCESS: Access denied for your role'), { statusCode: 403 })
+    }
+    if (existing.isActive) {
+        throw Object.assign(
+            new Error('Deactivate the task before permanently deleting it'),
+            { statusCode: 422 }
+        )
+    }
+
+    const publicIds = collectPhotoPublicIds(existing.instances)
+    await destroyProofImages(publicIds)
     await prisma.taskTemplate.delete({ where: { id } })
     return true
 }
