@@ -38,6 +38,24 @@ docker compose restart api
 docker compose exec mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
 ```
 
+## Backups
+
+`deploy/backup.sh` runs daily from root's crontab (02:45, after GEO's 02:30 Mongo backup):
+
+```
+45 2 * * * /opt/hasanoud/production/deploy/backup.sh >> /var/log/hasanoud-backup.log 2>&1
+```
+
+It writes `mysql-<date>.sql.gz` and `uploads-<date>.tar.gz` to `/opt/hasanoud/backups/production/` and keeps the last 14 of each. A dump that does not end with mysqldump's "Dump completed" marker is discarded and the run fails.
+
+These backups are on the same server. Copy `/opt/hasanoud/backups` off the server as well (Hostinger weekly snapshot, or rclone to Google Drive / S3).
+
+```bash
+./deploy/backup.sh                                   # backup now
+./deploy/restore.sh --check <mysql-....sql.gz>       # load into a throwaway DB, compare row counts — safe
+./deploy/restore.sh <mysql-....sql.gz> [uploads-....tar.gz]   # REPLACE live data (asks first, snapshots current state)
+```
+
 ## Database migrations
 
 Schema changes go through Prisma migrations (`prisma/migrations`), applied automatically when `api` starts.
