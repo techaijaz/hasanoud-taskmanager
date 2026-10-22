@@ -59,6 +59,7 @@ flowchart LR
 ## 5. Cross-cutting rules
 
 - **Security:** company-email-only logins; httpOnly cookie sessions; sessions revoked on password change and on deactivation; sensitive numbers (Aadhaar, PAN, bank account) encrypted in the database; uploaded files served only to logged-in users with permission; every sensitive change and every "show full number" written to the audit log.
+- **Screens:** one app for everyone; employee screens mobile-first, HR/admin screens desktop-first, menus by permission ([ADR-004](../adr/004-one-app-screens-by-audience.md)).
 - **Time:** all business rules in **IST**; server time is the source of truth.
 - **Data:** nothing is hard-deleted where history matters (employees, punches, approvals). Records are deactivated or marked.
 - **Environments:** production (`/opt/hasanoud/production`) and **staging** (`/opt/hasanoud/staging`, needed before the attendance launch — GPS and camera need HTTPS on real phones).
