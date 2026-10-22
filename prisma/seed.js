@@ -9,8 +9,9 @@ import quiker from '../src/util/quiker.js'
 const parsed = quiker.parsePhoneNumber('+919999999999')
 const ADMIN = {
     name: 'Admin',
-    email: 'admin@taskmanager.local',
-    password: 'Admin@123',
+    // Override on any server: the defaults are for local development only
+    email: process.env.SEED_ADMIN_EMAIL || 'admin@taskmanager.local',
+    password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123',
     phoneIsoCode: parsed.isoCode || 'IN',
     phoneCountryCode: parsed.countryCode || '91',
     phoneInternationalNumber: parsed.internationalNumber || '+91 99999 99999',
@@ -22,6 +23,9 @@ const ADMIN = {
 }
 
 async function main() {
+    if (process.env.NODE_ENV === 'production' && !process.env.SEED_ADMIN_PASSWORD) {
+        throw new Error('Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD: the default admin password is for local development only')
+    }
     const passwordHash = await bcrypt.hash(ADMIN.password, 10)
     const token = uuidv4()
     const code = String(Math.floor(100000 + Math.random() * 900000))

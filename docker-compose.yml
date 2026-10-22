@@ -8,6 +8,9 @@
 # variable (marked :?) is missing. Only `web` publishes a port, and only on 127.0.0.1.
 # Data lives in ./data (mysql, uploads, logs) next to this file, so the whole app is one folder.
 #
+# Staging uses the same file from /opt/hasanoud/staging with its own .env (project name, domain,
+# port) and COMPOSE_PROFILES=mailpit, which adds a mail catcher so no real email leaves staging.
+#
 # The API runs as exactly one container: the rate limiter, permission cache and the
 # missed-task sync job are in-process, so do not scale `api`.
 
@@ -23,6 +26,9 @@ services:
   mysql:
     image: mysql:8.4
     restart: unless-stopped
+    # Production and staging share one VPS with GEO: cap memory so one cannot starve the others
+    command: --innodb-buffer-pool-size=256M
+    mem_limit: 768m
     environment:
       MYSQL_DATABASE: ${DB_NAME:?Set DB_NAME in .env}
       MYSQL_USER: ${DB_USER:?Set DB_USER in .env}
@@ -40,8 +46,9 @@ services:
 
   api:
     build: .
-    image: hasanoud-taskmanager-api:local
+    image: hasanoud-taskmanager-api:${COMPOSE_PROJECT_NAME:-hasanoud-production}
     restart: unless-stopped
+    mem_limit: 512m
     env_file: .env
     environment:
       NODE_ENV: production
@@ -70,10 +77,27 @@ services:
 
   web:
     build: ./client
-    image: hasanoud-taskmanager-web:local
+    image: hasanoud-taskmanager-web:${COMPOSE_PROJECT_NAME:-hasanoud-production}
     restart: unless-stopped
+    mem_limit: 64m
     ports:
       - '127.0.0.1:${HTTP_PORT:-8100}:80'
     depends_on:
       - api
+    logging: *logging
+
+  # Staging only (COMPOSE_PROFILES=mailpit): catches every email; UI at https://<staging domain>/mailpit/
+  mailpit:
+    image: axllent/mailpit:v1.29.7
+    profiles: [mailpit]
+    restart: unless-stopped
+    environment:
+      MP_WEBROOT: mailpit
+      MP_UI_AUTH: ${MAILPIT_UI_AUTH:-}
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      MP_MAX_MESSAGES: 500
+    ports:
+      - '127.0.0.1:${MAILPIT_PORT:-8125}:8025'
+    mem_limit: 128m
     logging: *logging

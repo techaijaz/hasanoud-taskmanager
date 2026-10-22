@@ -12,8 +12,9 @@ Runs on the shared Hostinger VPS (`srv1915308`) with Docker Compose, next to the
 │       ├── mysql/       MySQL data files
 │       ├── uploads/     proof photos (UPLOAD_PROVIDER=local)
 │       └── logs/        app log (rotates at 10MB x 5)
-├── staging/             same layout, own .env / data, next free port (planned)
-└── backups/             database dumps
+├── staging/             same layout, own .env / data → https://staging.ops.hasanoud.in (127.0.0.1:8101)
+│                        + Mailpit (catches all email) at /mailpit/ (127.0.0.1:8125)
+└── backups/             database dumps (production/ daily, production/pre-deploy/ before each deploy)
 ```
 
 Containers (`docker compose ps` inside an environment folder):
@@ -26,12 +27,21 @@ Containers (`docker compose ps` inside an environment folder):
 
 The host nginx (`/etc/nginx/sites-available/task.hasanoud.in`, template in `deploy/host-nginx.conf`) terminates HTTPS and proxies to the web container.
 
+## Release flow: staging first
+
+1. Push to `main`; wait for CI to pass.
+2. `/opt/hasanoud/staging/deploy/deploy.sh` — staging runs the latest `main`. Check it there (phones for GPS/camera).
+3. `/opt/hasanoud/production/deploy/deploy.sh --from-staging` — production gets **exactly the commit staging runs**, after an automatic backup.
+
+Staging has its own database with test data only: never copy production data into it. Its email goes to Mailpit, so nothing reaches real people. Both environments build their own images (`hasanoud-taskmanager-api:<project name>`), so a staging build never touches production.
+
 ## Everyday commands
 
-Run inside `/opt/hasanoud/production`:
+Run inside `/opt/hasanoud/production` (or `staging`):
 
 ```bash
-./deploy/deploy.sh                 # pull main, rebuild, restart, wait for health
+./deploy/deploy.sh --from-staging  # production: deploy what staging runs (backup first)
+./deploy/deploy.sh                 # latest main, rebuild, restart, wait for health
 docker compose ps                  # status
 docker compose logs -f api         # API logs (startup errors appear here)
 docker compose restart api
@@ -68,5 +78,5 @@ Schema changes go through Prisma migrations (`prisma/migrations`), applied autom
 1. `git clone https://github.com/techaijaz/hasanoud-taskmanager.git /opt/hasanoud/<env>`
 2. `cp .env.docker.example .env`, fill it in (`openssl rand -hex 48` for secrets), set `COMPOSE_PROJECT_NAME`, `DOMAIN`, `HTTP_PORT`.
 3. `./deploy/deploy.sh`
-4. Host nginx site from `deploy/host-nginx.conf` (adjust domain/port), `nginx -t && systemctl reload nginx`, `certbot --nginx -d <domain>`.
-5. First admin user: `docker compose exec api node prisma/seed.js`, then change the password straight away.
+4. Host nginx site from `deploy/host-nginx.conf` (staging: `deploy/host-nginx-staging.conf`), `nginx -t && systemctl reload nginx`, `certbot --nginx -d <domain>`.
+5. First admin user: `docker compose exec -e SEED_ADMIN_EMAIL=... -e SEED_ADMIN_PASSWORD=... api node prisma/seed.js` (refuses the development default in production mode).
