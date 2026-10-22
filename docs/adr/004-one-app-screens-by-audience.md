@@ -20,7 +20,6 @@ One app at **ops.hasanoud.in**, with one login. Each screen is designed for the 
   - a manager is also an employee (punches, and also fixes the team's attendance), so they would log in twice and switch between sites;
   - a login cookie cannot be shared between `.com` and `.in`, so two sessions plus cross-site security setup;
   - two frontends to build, deploy and test for a small team.
-- **Two frontends on the same domain (`app.hasanoud.in` + `ops.hasanoud.in`):** login could be shared, but it is still double the frontend work. Kept as a later option; the API does not change.
 
 ## Consequences
 
