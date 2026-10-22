@@ -42,7 +42,6 @@ server.on('error', (error) => {
     reportFatal('SERVER LISTEN ERROR', error)
     process.exit(1)
 })
-
 ;(async () => {
     try {
         await databaseService.connect()

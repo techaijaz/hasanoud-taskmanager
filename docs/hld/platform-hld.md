@@ -32,29 +32,29 @@ flowchart LR
 
 ## 3. Modules and order
 
-| # | Module | Depends on | Status |
-|---|---|---|---|
-| 0 | Core (auth, users, RBAC, locations, holidays, audit, files, notifications) | — | Exists; extended by module 2 |
-| 1 | Tasks | Core | Exists |
-| 2 | **People + Attendance** | Core | **LLD written** |
-| 3 | Leave, Salary | People, Attendance | Later |
-| 4 | Products + stock (warehouse, shop, transfers), BOM / production | Core | Later |
-| 5 | Vendors + purchase | Stock | Later |
-| 6 | Sales: shop sales, Shopify orders, Shiprocket shipping | Stock | Later; Vinculum keeps print/cancel |
-| 7 | Expenses + MIS (income/expense view), Tally export | Sales, Purchase, Expenses | Later |
+| #   | Module                                                                     | Depends on                | Status                             |
+| --- | -------------------------------------------------------------------------- | ------------------------- | ---------------------------------- |
+| 0   | Core (auth, users, RBAC, locations, holidays, audit, files, notifications) | —                         | Exists; extended by module 2       |
+| 1   | Tasks                                                                      | Core                      | Exists                             |
+| 2   | **People + Attendance**                                                    | Core                      | **LLD written**                    |
+| 3   | Leave, Salary                                                              | People, Attendance        | Later                              |
+| 4   | Products + stock (warehouse, shop, transfers), BOM / production            | Core                      | Later                              |
+| 5   | Vendors + purchase                                                         | Stock                     | Later                              |
+| 6   | Sales: shop sales, Shopify orders, Shiprocket shipping                     | Stock                     | Later; Vinculum keeps print/cancel |
+| 7   | Expenses + MIS (income/expense view), Tally export                         | Sales, Purchase, Expenses | Later                              |
 
 ## 4. External systems
 
-| System | Used for | When |
-|---|---|---|
-| Hostinger SMTP | Invite and password emails | Now |
-| Web Push | Attendance reminders | Module 2 |
-| Shopify (webhooks/API) | Orders | Module 6 |
-| Shiprocket (API, CSV) | Shipping status, COD remittance | Module 6–7 |
-| Gokwik, Razorpay (CSV) | Prepaid remittance | Module 7 |
-| Tally | Accounting (stays in Tally); export of invoices/vouchers | Module 7 |
-| Vinculum | Invoice/label/challan printing, cancellation — **stays outside the platform** | — |
-| SalaryBox | Attendance during transition, runs in parallel | Until switched off |
+| System                 | Used for                                                                      | When               |
+| ---------------------- | ----------------------------------------------------------------------------- | ------------------ |
+| Hostinger SMTP         | Invite and password emails                                                    | Now                |
+| Web Push               | Attendance reminders                                                          | Module 2           |
+| Shopify (webhooks/API) | Orders                                                                        | Module 6           |
+| Shiprocket (API, CSV)  | Shipping status, COD remittance                                               | Module 6–7         |
+| Gokwik, Razorpay (CSV) | Prepaid remittance                                                            | Module 7           |
+| Tally                  | Accounting (stays in Tally); export of invoices/vouchers                      | Module 7           |
+| Vinculum               | Invoice/label/challan printing, cancellation — **stays outside the platform** | —                  |
+| SalaryBox              | Attendance during transition, runs in parallel                                | Until switched off |
 
 ## 5. Cross-cutting rules
 
@@ -68,4 +68,4 @@ flowchart LR
 ## 6. Domains
 
 - `ops.hasanoud.in` — the platform (new DNS record → VPS).
-- `task.hasanoud.in` — *proposed:* redirect to `ops.hasanoud.in` once it is live (to confirm).
+- `task.hasanoud.in` — _proposed:_ redirect to `ops.hasanoud.in` once it is live (to confirm).

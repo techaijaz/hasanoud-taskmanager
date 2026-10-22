@@ -68,11 +68,7 @@ export const patchSkipOnHoliday = async (req, res, next) => {
         if (error) {
             return httpError(next, error, req, 422)
         }
-        const instance = await taskInstanceService.setInstanceSkipOnHoliday(
-            req.authenticatedUser,
-            req.params.id,
-            value.skipOnHoliday
-        )
+        const instance = await taskInstanceService.setInstanceSkipOnHoliday(req.authenticatedUser, req.params.id, value.skipOnHoliday)
         if (!instance) {
             return httpError(next, new Error(responseMessage.NOT_FOUND('Task')), req, 404)
         }
@@ -86,12 +82,10 @@ export const completeInstanceItem = async (req, res, next) => {
     try {
         const files = req.files || []
         const photos = await resolveProofPhotos(files)
-        const instance = await taskInstanceService.completeInstanceItem(
-            req.authenticatedUser,
-            req.params.id,
-            req.params.itemId,
-            { note: req.body?.note, photos }
-        )
+        const instance = await taskInstanceService.completeInstanceItem(req.authenticatedUser, req.params.id, req.params.itemId, {
+            note: req.body?.note,
+            photos
+        })
         if (!instance) {
             return httpError(next, new Error(responseMessage.NOT_FOUND('Task')), req, 404)
         }

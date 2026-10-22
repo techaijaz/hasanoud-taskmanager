@@ -210,7 +210,12 @@ export default function PermissionsPage() {
         <>
           <div className="flex gap-2">
             {roles.map((role) => (
-              <Button key={role} variant={activeRole === role ? 'default' : 'outline'} size="sm" onClick={() => setActiveRole(role)}>
+              <Button
+                key={role}
+                variant={activeRole === role ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveRole(role)}
+              >
                 {role}
               </Button>
             ))}
@@ -229,8 +234,7 @@ export default function PermissionsPage() {
               <SelectContent>
                 {users.map((row) => (
                   <SelectItem key={row.id} value={row.id}>
-                    {row.name} ({row.role})
-                    {hasCustomPerms(row.permissionOverrides) ? ' · extra' : ''}
+                    {row.name} ({row.role}){hasCustomPerms(row.permissionOverrides) ? ' · extra' : ''}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -240,13 +244,19 @@ export default function PermissionsPage() {
           {!selectedUser ? (
             <p className="text-sm text-muted-foreground">Pick a user to grant extra access beyond their role.</p>
           ) : selectedUser.role === 'admin' ? (
-            <p className="text-sm text-muted-foreground">Admin already has every module. Extra permissions apply to user and manager only.</p>
+            <p className="text-sm text-muted-foreground">
+              Admin already has every module. Extra permissions apply to user and manager only.
+            </p>
           ) : (
             <>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary">{selectedUser.role}</Badge>
-                {hasCustomPerms(selectedUser.permissionOverrides) ? <Badge variant="outline">Has extra perms</Badge> : null}
-                <p className="text-xs text-muted-foreground">Checked boxes start as this role&apos;s defaults. Change only what should be extra for this person.</p>
+                {hasCustomPerms(selectedUser.permissionOverrides) ? (
+                  <Badge variant="outline">Has extra perms</Badge>
+                ) : null}
+                <p className="text-xs text-muted-foreground">
+                  Checked boxes start as this role&apos;s defaults. Change only what should be extra for this person.
+                </p>
               </div>
               <PermissionTable modules={modules} rowFor={(mod) => userGrid[mod.key]} onToggle={toggleUser} />
               <div className="flex gap-2">
@@ -285,7 +295,10 @@ function PermissionTable({ modules, rowFor, onToggle }) {
               <td className="px-3 py-2">{mod.label}</td>
               {ACTIONS.map((action) => (
                 <td key={action.key} className="px-3 py-2">
-                  <Checkbox checked={!!rowFor(mod)?.[action.key]} onCheckedChange={() => onToggle(mod.key, action.key)} />
+                  <Checkbox
+                    checked={!!rowFor(mod)?.[action.key]}
+                    onCheckedChange={() => onToggle(mod.key, action.key)}
+                  />
                 </td>
               ))}
             </tr>

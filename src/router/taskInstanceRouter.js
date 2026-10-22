@@ -8,13 +8,9 @@ const router = Router()
 
 router.route('/').get(taskInstanceController.getInstances)
 
-router
-    .route('/:id/skip-on-holiday')
-    .patch(authorizePermission('taskBoard', 'canEdit'), taskInstanceController.patchSkipOnHoliday)
+router.route('/:id/skip-on-holiday').patch(authorizePermission('taskBoard', 'canEdit'), taskInstanceController.patchSkipOnHoliday)
 
-router
-    .route('/:id/board')
-    .patch(authorizePermission('taskBoard', 'canEdit'), taskInstanceController.placeOnBoard)
+router.route('/:id/board').patch(authorizePermission('taskBoard', 'canEdit'), taskInstanceController.placeOnBoard)
 
 router.route('/:id/items/:itemId/complete').post(
     authorizePermission('taskBoard', 'canEdit'),

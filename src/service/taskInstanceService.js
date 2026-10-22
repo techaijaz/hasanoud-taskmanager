@@ -50,8 +50,7 @@ const holidayLocationIdsForDate = async (ymd) => {
     }
 }
 
-const isOffDay = (ymd, locationId, holidays) =>
-    isSundayYmd(ymd) || holidays.all || holidays.ids.has(locationId)
+const isOffDay = (ymd, locationId, holidays) => isSundayYmd(ymd) || holidays.all || holidays.ids.has(locationId)
 
 const itemTimes = (ymd, dueTime) => {
     const dueAt = istWallToUtc(ymd, dueTime)
@@ -209,7 +208,9 @@ const locationIdsFor = async (actor) => {
 const assigneeRows = (instance) => instance.template?.assignees || []
 
 const assigneeIdsOf = (instance) =>
-    assigneeRows(instance).map((row) => row.userId || row.user?.id).filter(Boolean)
+    assigneeRows(instance)
+        .map((row) => row.userId || row.user?.id)
+        .filter(Boolean)
 
 const canSeeInstance = async (actor, instance, visibleUserIds, locationIds) => {
     if (actor.role === 'admin') return true
@@ -248,7 +249,9 @@ const rollupParentStatus = (instance) => {
 
 const mapInstance = (row, { holidayIds, canAct }) => {
     const offDay = isOffDay(row.scheduledDate, row.locationId, holidayIds)
-    const assignees = assigneeRows(row).map((item) => item.user).filter(Boolean)
+    const assignees = assigneeRows(row)
+        .map((item) => item.user)
+        .filter(Boolean)
     const todayStatus = displayStatus(row)
     const items = (row.items || []).map((item) => ({
         id: item.id,
@@ -335,9 +338,8 @@ export const getTodayInstanceForTemplate = async (templateId, ymd) => {
 const matchInstanceItem = (instanceItems, previousItem, used) => {
     if (!previousItem) return null
     return (
-        instanceItems.find(
-            (row) => !used.has(row.id) && row.title === previousItem.title && row.sortOrder === previousItem.sortOrder
-        ) || instanceItems.find((row) => !used.has(row.id) && row.title === previousItem.title)
+        instanceItems.find((row) => !used.has(row.id) && row.title === previousItem.title && row.sortOrder === previousItem.sortOrder) ||
+        instanceItems.find((row) => !used.has(row.id) && row.title === previousItem.title)
     )
 }
 
@@ -575,15 +577,9 @@ export const moveBoardItem = async (actor, sourceInstanceId, itemId, { targetIns
                 data: { instanceId: targetInstanceId }
             })
             const leftover = (source.items || []).filter((row) => row.id !== itemId)
-            await Promise.all(
-                leftover.map((row, index) =>
-                    tx.taskInstanceItem.update({ where: { id: row.id }, data: { sortOrder: index } })
-                )
-            )
+            await Promise.all(leftover.map((row, index) => tx.taskInstanceItem.update({ where: { id: row.id }, data: { sortOrder: index } })))
         }
-        await Promise.all(
-            itemIds.map((id, index) => tx.taskInstanceItem.update({ where: { id }, data: { sortOrder: index } }))
-        )
+        await Promise.all(itemIds.map((id, index) => tx.taskInstanceItem.update({ where: { id }, data: { sortOrder: index } })))
     })
 
     await persistParent(sourceInstanceId)

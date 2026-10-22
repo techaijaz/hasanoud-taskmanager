@@ -4,20 +4,13 @@ import { authorizePermission } from '../middleware/authorize.js'
 
 const router = Router()
 
-router
-    .route('/')
-    .get(taskTemplateController.getTemplates)
-    .post(authorizePermission('taskList', 'canCreate'), taskTemplateController.createTemplate)
+router.route('/').get(taskTemplateController.getTemplates).post(authorizePermission('taskList', 'canCreate'), taskTemplateController.createTemplate)
 
 router.route('/options').get(taskTemplateController.getFormOptions)
 
-router
-    .route('/:id/skip-on-holiday')
-    .patch(authorizePermission('taskList', 'canEdit'), taskTemplateController.patchSkipOnHoliday)
+router.route('/:id/skip-on-holiday').patch(authorizePermission('taskList', 'canEdit'), taskTemplateController.patchSkipOnHoliday)
 
-router
-    .route('/:id/deactivate')
-    .patch(authorizePermission('taskList', 'canDelete'), taskTemplateController.deactivateTemplate)
+router.route('/:id/deactivate').patch(authorizePermission('taskList', 'canDelete'), taskTemplateController.deactivateTemplate)
 
 router
     .route('/:id')

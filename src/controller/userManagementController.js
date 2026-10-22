@@ -1,11 +1,7 @@
 import httpResponse from '../util/httpResponse.js'
 import responseMessage from '../constant/responseMessage.js'
 import httpError from '../util/httpError.js'
-import {
-    validateJoiSchema,
-    validationCreateManagedUserBody,
-    validationUpdateManagedUserBody
-} from '../service/validationService.js'
+import { validateJoiSchema, validationCreateManagedUserBody, validationUpdateManagedUserBody } from '../service/validationService.js'
 import quiker from '../util/quiker.js'
 import databaseService from '../service/databaseService.js'
 import { EUserRole } from '../constant/userConstant.js'
@@ -308,7 +304,7 @@ export const deleteUser = async (req, res, next) => {
 
         const reportsCount = await databaseService.countDirectReports(id)
         if (reportsCount > 0) {
-            return httpError(next, new Error('Reassign this user\'s team before deleting'), req, 400)
+            return httpError(next, new Error("Reassign this user's team before deleting"), req, 400)
         }
 
         await databaseService.deleteUser(id)

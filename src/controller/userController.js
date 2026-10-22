@@ -59,7 +59,7 @@ export default {
     confirmation: async (req, res, next) => {
         try {
             const { params, query } = req
-            
+
             // * confirm user by token and code
             const user = await databaseService.findUserByConfirmationTokenAndCode(params.token, query.code)
             if (!user) {
@@ -99,7 +99,7 @@ export default {
 
             const { email, phone, password } = value
             const user = await resolveLoginUser({ email, phone })
-            
+
             // * validate password
             if (!user) {
                 return httpError(next, new Error(responceMessage.NOT_FOUND('User')), req, 404)
@@ -108,7 +108,7 @@ export default {
             if (!isPasswordMatch) {
                 return httpError(next, new Error(responceMessage.INVALID_CREDENTIALS), req, 404)
             }
-            
+
             // * generate tokens, update last login and refresh token
             const refreshToken = issueAuthCookies(res, user)
             await databaseService.updateUser(user.id, {
@@ -178,11 +178,7 @@ export default {
                     }
 
                     if (userId) {
-                        const newAccessToken = quiker.generateToken(
-                            { userId, role },
-                            config.ACCESS_TOKEN.SECRET,
-                            config.ACCESS_TOKEN.EXPIRY
-                        )
+                        const newAccessToken = quiker.generateToken({ userId, role }, config.ACCESS_TOKEN.SECRET, config.ACCESS_TOKEN.EXPIRY)
                         res.cookie('accessToken', newAccessToken, quiker.authCookieOptions(1000 * config.ACCESS_TOKEN.EXPIRY))
                         return httpResponse(req, res, 200, responceMessage.SUCCESS, null)
                     }
@@ -225,9 +221,9 @@ export default {
             const subject = 'Account Password Reset requested'
             const text = `Hey ${user.name}, Please reset your password by clicking on the link below.\n\nLink will expire in 15 minutes.\n\n${resetlURL}`
 
-            emailService.sendEmail(to, subject, text).catch((error) =>
-                logger.error('EMAIL_SERVICE', { meta: { message: error?.message, stack: error?.stack } })
-            )
+            emailService
+                .sendEmail(to, subject, text)
+                .catch((error) => logger.error('EMAIL_SERVICE', { meta: { message: error?.message, stack: error?.stack } }))
 
             httpResponse(req, res, 200, responceMessage.SUCCESS, null)
         } catch (error) {

@@ -78,7 +78,9 @@ export default function NotificationsPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold">Notification</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Missed-task alerts for your scope. History stays after the task is completed.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Missed-task alerts for your scope. History stays after the task is completed.
+          </p>
         </div>
         {permission !== 'unsupported' && permission !== 'granted' ? (
           <Button variant="outline" size="sm" onClick={enablePush}>

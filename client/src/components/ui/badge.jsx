@@ -10,7 +10,11 @@ function Badge({ className, variant = 'default', ...props }) {
   }
   return (
     <span
-      className={cn('inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium', variants[variant] || variants.default, className)}
+      className={cn(
+        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
+        variants[variant] || variants.default,
+        className
+      )}
       {...props}
     />
   )

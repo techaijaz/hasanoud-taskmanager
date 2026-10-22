@@ -4,10 +4,7 @@ import { authorizePermission } from '../middleware/authorize.js'
 
 const router = Router()
 
-router
-    .route('/')
-    .get(userManagementController.getAllUsers)
-    .post(authorizePermission('users', 'canCreate'), userManagementController.createUser)
+router.route('/').get(userManagementController.getAllUsers).post(authorizePermission('users', 'canCreate'), userManagementController.createUser)
 router.route('/permission-matrix').get(userManagementController.getPermissionMatrix)
 
 router

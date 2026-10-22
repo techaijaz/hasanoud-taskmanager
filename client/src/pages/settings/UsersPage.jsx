@@ -73,7 +73,9 @@ export default function UsersPage() {
     setForm({
       name: row.name,
       email: row.email,
-      phone: `${row.phoneCountryCode || ''}${String(row.phoneInternationalNumber || '').replace(/\D/g, '').slice(-10)}`,
+      phone: `${row.phoneCountryCode || ''}${String(row.phoneInternationalNumber || '')
+        .replace(/\D/g, '')
+        .slice(-10)}`,
       role: row.role,
       reportsToId: row.reportsToId || '',
       locationIds: (row.locations || []).map((loc) => loc.id),
@@ -100,7 +102,9 @@ export default function UsersPage() {
           payload.permissionOverrides = null
         }
         await usersApi.update(editingId, payload)
-        toast.success(form.role !== originalRole ? 'User updated. Extra permissions reset to role defaults.' : 'User updated')
+        toast.success(
+          form.role !== originalRole ? 'User updated. Extra permissions reset to role defaults.' : 'User updated'
+        )
       } else {
         await usersApi.create(payload)
         toast.success('Invite sent')
@@ -128,7 +132,9 @@ export default function UsersPage() {
   const toggleLocation = (id) => {
     setForm((prev) => ({
       ...prev,
-      locationIds: prev.locationIds.includes(id) ? prev.locationIds.filter((item) => item !== id) : [...prev.locationIds, id]
+      locationIds: prev.locationIds.includes(id)
+        ? prev.locationIds.filter((item) => item !== id)
+        : [...prev.locationIds, id]
     }))
   }
 
@@ -198,11 +204,21 @@ export default function UsersPage() {
               </div>
               <div className="space-y-2">
                 <Label>Email</Label>
-                <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label>Phone</Label>
-                <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required placeholder="9198XXXXXXXX" />
+                <Input
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  required
+                  placeholder="9198XXXXXXXX"
+                />
               </div>
               <div className="space-y-2">
                 <Label>Role</Label>
@@ -221,7 +237,8 @@ export default function UsersPage() {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  This role&apos;s default permissions apply immediately. Extra access is granted later from Settings ? Permission.
+                  This role&apos;s default permissions apply immediately. Extra access is granted later from Settings ?
+                  Permission.
                   {editingId && form.role !== originalRole ? ' Changing role clears extra permissions.' : ''}
                 </p>
               </div>
@@ -242,7 +259,10 @@ export default function UsersPage() {
               </div>
               {isAdmin && (
                 <label className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={form.canManageUsers} onCheckedChange={(checked) => setForm({ ...form, canManageUsers: !!checked })} />
+                  <Checkbox
+                    checked={form.canManageUsers}
+                    onCheckedChange={(checked) => setForm({ ...form, canManageUsers: !!checked })}
+                  />
                   Can manage users
                 </label>
               )}
@@ -252,7 +272,10 @@ export default function UsersPage() {
                   <div className="grid gap-2">
                     {locations.map((loc) => (
                       <label key={loc.id} className="flex items-center gap-2 text-sm">
-                        <Checkbox checked={form.locationIds.includes(loc.id)} onCheckedChange={() => toggleLocation(loc.id)} />
+                        <Checkbox
+                          checked={form.locationIds.includes(loc.id)}
+                          onCheckedChange={() => toggleLocation(loc.id)}
+                        />
                         {loc.name}
                       </label>
                     ))}

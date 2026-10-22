@@ -47,7 +47,11 @@ instance.interceptors.response.use(
     const originalRequest = error.config
 
     if (error.response?.status === 401 && originalRequest) {
-      if (isAuthRoute(originalRequest.url) || originalRequest.url?.includes('/refresh-token') || originalRequest._retry) {
+      if (
+        isAuthRoute(originalRequest.url) ||
+        originalRequest.url?.includes('/refresh-token') ||
+        originalRequest._retry
+      ) {
         if (originalRequest.url?.includes('/refresh-token') || originalRequest._retry) {
           goLogin()
         }

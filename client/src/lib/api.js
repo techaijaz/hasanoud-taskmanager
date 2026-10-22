@@ -44,15 +44,18 @@ export const taskTemplatesApi = {
   options: () => api.get('/task-templates/options').then(unwrap),
   create: (payload) => api.post('/task-templates', payload).then(unwrap),
   update: (id, payload) => api.put(`/task-templates/${id}`, payload).then(unwrap),
-  setSkipOnHoliday: (id, skipOnHoliday) => api.patch(`/task-templates/${id}/skip-on-holiday`, { skipOnHoliday }).then(unwrap),
+  setSkipOnHoliday: (id, skipOnHoliday) =>
+    api.patch(`/task-templates/${id}/skip-on-holiday`, { skipOnHoliday }).then(unwrap),
   deactivate: (id) => api.patch(`/task-templates/${id}/deactivate`).then(unwrap),
   remove: (id) => api.delete(`/task-templates/${id}`).then(unwrap)
 }
 
 export const taskInstancesApi = {
   list: (date) => api.get('/task-instances', { params: { date } }).then(unwrap),
-  setSkipOnHoliday: (id, skipOnHoliday) => api.patch(`/task-instances/${id}/skip-on-holiday`, { skipOnHoliday }).then(unwrap),
-  completeItem: (id, itemId, formData) => api.post(`/task-instances/${id}/items/${itemId}/complete`, formData).then(unwrap),
+  setSkipOnHoliday: (id, skipOnHoliday) =>
+    api.patch(`/task-instances/${id}/skip-on-holiday`, { skipOnHoliday }).then(unwrap),
+  completeItem: (id, itemId, formData) =>
+    api.post(`/task-instances/${id}/items/${itemId}/complete`, formData).then(unwrap),
   placeOnBoard: (id, payload) => api.patch(`/task-instances/${id}/board`, payload).then(unwrap)
 }
 

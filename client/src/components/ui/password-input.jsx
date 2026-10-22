@@ -9,12 +9,7 @@ const PasswordInput = React.forwardRef(({ className, ...props }, ref) => {
 
   return (
     <div className="relative">
-      <Input
-        type={visible ? 'text' : 'password'}
-        className={cn('pr-10', className)}
-        ref={ref}
-        {...props}
-      />
+      <Input type={visible ? 'text' : 'password'} className={cn('pr-10', className)} ref={ref} {...props} />
       <Button
         type="button"
         variant="ghost"

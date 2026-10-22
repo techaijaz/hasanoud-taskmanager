@@ -27,10 +27,7 @@ const templateInclude = {
         select: {
             instances: {
                 where: {
-                    OR: [
-                        { status: { in: DONE_STATUSES } },
-                        { items: { some: { status: { in: DONE_STATUSES } } } }
-                    ]
+                    OR: [{ status: { in: DONE_STATUSES } }, { items: { some: { status: { in: DONE_STATUSES } } } }]
                 }
             }
         }
@@ -104,10 +101,7 @@ const listWhereForActor = async (actor, filters = {}) => {
         })
     ).map((row) => row.locationId)
 
-    const scopeOr = [
-        { createdById: { in: visibleUserIds } },
-        { assignees: { some: { userId: { in: visibleUserIds } } } }
-    ]
+    const scopeOr = [{ createdById: { in: visibleUserIds } }, { assignees: { some: { userId: { in: visibleUserIds } } } }]
     if (actor.role === 'manager' && locationIds.length) {
         scopeOr.push({ locationId: { in: locationIds } })
     }
@@ -295,9 +289,7 @@ export const createTemplate = async (actor, payload) => {
     if (schedule.kind === 'one_time' && schedule.scheduledDate < todayIstYmd()) {
         throw Object.assign(new Error('One-time date cannot be in the past'), { statusCode: 422 })
     }
-    const assigneeIds = [
-        ...new Set([actor.id, ...(await assertAssigneesAndLocation(actor, payload.assigneeIds, payload.locationId))])
-    ]
+    const assigneeIds = [...new Set([actor.id, ...(await assertAssigneesAndLocation(actor, payload.assigneeIds, payload.locationId))])]
     const items = normalizeItems(payload.items)
 
     const createdId = await prisma.$transaction(async (tx) => {
@@ -363,11 +355,7 @@ export const updateTemplate = async (actor, id, payload) => {
     }
 
     const locationId = payload.locationId ?? existing.locationId
-    const assigneeIds = await assertAssigneesAndLocation(
-        actor,
-        payload.assigneeIds ?? existing.assignees.map((row) => row.userId),
-        locationId
-    )
+    const assigneeIds = await assertAssigneesAndLocation(actor, payload.assigneeIds ?? existing.assignees.map((row) => row.userId), locationId)
     const items = payload.items !== undefined ? normalizeItems(payload.items) : null
     const previousItems = existing.items || []
     const today = todayIstYmd()
@@ -527,10 +515,7 @@ export const permanentlyDeleteTemplate = async (actor, id) => {
         throw Object.assign(new Error('FORBIDDEN_ACCESS: Access denied for your role'), { statusCode: 403 })
     }
     if (existing.isActive) {
-        throw Object.assign(
-            new Error('Deactivate the task before permanently deleting it'),
-            { statusCode: 422 }
-        )
+        throw Object.assign(new Error('Deactivate the task before permanently deleting it'), { statusCode: 422 })
     }
 
     const publicIds = collectPhotoPublicIds(existing.instances)

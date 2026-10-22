@@ -97,11 +97,13 @@ export const validationTaskTemplateBody = Joi.object({
     locationId: Joi.string().uuid().required(),
     priority: Joi.string().valid('high', 'medium', 'low').default('medium'),
     kind: Joi.string().valid('one_time', 'recurring').required(),
-    recurrence: Joi.string().valid('daily', 'weekly', 'custom').when('kind', {
-        is: 'recurring',
-        then: Joi.required(),
-        otherwise: Joi.allow(null, '')
-    }),
+    recurrence: Joi.string()
+        .valid('daily', 'weekly', 'custom')
+        .when('kind', {
+            is: 'recurring',
+            then: Joi.required(),
+            otherwise: Joi.allow(null, '')
+        }),
     weekdays: weekdays.when('recurrence', {
         is: Joi.valid('weekly', 'custom'),
         then: Joi.required(),

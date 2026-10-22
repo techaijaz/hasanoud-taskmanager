@@ -39,7 +39,13 @@ export default function ResetPasswordPage() {
           <form className="space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <Label htmlFor="password">New password</Label>
-              <PasswordInput id="password" minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+              <PasswordInput
+                id="password"
+                minLength={8}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
             </div>
             <Button className="w-full" type="submit" disabled={saving}>
               Save password

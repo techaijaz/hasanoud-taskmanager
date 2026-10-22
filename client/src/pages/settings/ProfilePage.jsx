@@ -62,7 +62,12 @@ export default function ProfilePage() {
             </div>
             <div className="space-y-2">
               <Label>New password</Label>
-              <PasswordInput minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+              <PasswordInput
+                minLength={8}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
             </div>
             <Button type="submit" disabled={saving}>
               Update

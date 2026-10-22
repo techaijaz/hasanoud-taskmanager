@@ -20,7 +20,9 @@ export default function LoginPage() {
     event.preventDefault()
     setSaving(true)
     try {
-      const payload = identifier.includes('@') ? { email: identifier.trim(), password } : { phone: identifier.trim(), password }
+      const payload = identifier.includes('@')
+        ? { email: identifier.trim(), password }
+        : { phone: identifier.trim(), password }
       await login(payload)
       toast.success('Signed in')
       navigate('/board')
@@ -42,11 +44,23 @@ export default function LoginPage() {
           <form className="space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <Label htmlFor="identifier">Email or phone</Label>
-              <Input id="identifier" value={identifier} onChange={(e) => setIdentifier(e.target.value)} required autoComplete="username" />
+              <Input
+                id="identifier"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                required
+                autoComplete="username"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <PasswordInput id="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+              <PasswordInput
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
             </div>
             <Button className="w-full" type="submit" disabled={saving}>
               {saving ? 'Signing in…' : 'Sign in'}

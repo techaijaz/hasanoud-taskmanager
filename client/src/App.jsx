@@ -31,52 +31,52 @@ export default function App() {
         <BrowserRouter>
           <ThemedToaster />
           <Routes>
-          <Route
-            path="/login"
-            element={
-              <GuestRoute>
-                <LoginPage />
-              </GuestRoute>
-            }
-          />
-          <Route
-            path="/forgot-password"
-            element={
-              <GuestRoute>
-                <ForgotPasswordPage />
-              </GuestRoute>
-            }
-          />
-          <Route
-            path="/reset-password/:token"
-            element={
-              <GuestRoute>
-                <ResetPasswordPage />
-              </GuestRoute>
-            }
-          />
-          <Route
-            element={
-              <ProtectedRoute>
-                <AppShell />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/board" element={<TaskBoardPage />} />
-            <Route path="/list" element={<TaskListPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/settings" element={<SettingsLayout />}>
-              <Route index element={<Navigate to="profile" replace />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="users" element={<UsersPage />} />
-              <Route path="permissions" element={<PermissionsPage />} />
-              <Route path="locations" element={<LocationsPage />} />
-              <Route path="holidays" element={<HolidaysPage />} />
-              <Route path="notifications" element={<NotificationsPage />} />
+            <Route
+              path="/login"
+              element={
+                <GuestRoute>
+                  <LoginPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <GuestRoute>
+                  <ForgotPasswordPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/reset-password/:token"
+              element={
+                <GuestRoute>
+                  <ResetPasswordPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/board" element={<TaskBoardPage />} />
+              <Route path="/list" element={<TaskListPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/settings" element={<SettingsLayout />}>
+                <Route index element={<Navigate to="profile" replace />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="users" element={<UsersPage />} />
+                <Route path="permissions" element={<PermissionsPage />} />
+                <Route path="locations" element={<LocationsPage />} />
+                <Route path="holidays" element={<HolidaysPage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
+              </Route>
+              <Route path="/" element={<Navigate to="/board" replace />} />
             </Route>
-            <Route path="/" element={<Navigate to="/board" replace />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/board" replace />} />
+            <Route path="*" element={<Navigate to="/board" replace />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

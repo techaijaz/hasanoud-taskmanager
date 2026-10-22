@@ -76,7 +76,7 @@ Bottles are filled → cap → dipstick → sticker → **ready product**. Ready
 
 ## 12. Features planned (as features of one platform)
 
-1. Employee management *(first — see employee-management.md)*
+1. Employee management _(first — see employee-management.md)_
 2. Purchase and inventory with BOM and ready products
 3. Vendor purchase
 4. Expense and utilities manager

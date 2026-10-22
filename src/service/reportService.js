@@ -35,8 +35,7 @@ const employeeOutcome = (user, instanceOutcome, completerIds) => {
     return completerIds.has(user.id) ? instanceOutcome : 'covered'
 }
 
-const completerIdsOf = (instance) =>
-    new Set((instance.items || []).map((item) => item.completedById).filter(Boolean))
+const completerIdsOf = (instance) => new Set((instance.items || []).map((item) => item.completedById).filter(Boolean))
 
 const completerNamesOf = (instance) => {
     const names = []
@@ -89,8 +88,7 @@ const locationIdsFor = async (actor) => {
     return rows.map((row) => row.locationId)
 }
 
-const assigneeIdsOf = (instance) =>
-    (instance.template?.assignees || []).map((row) => row.userId || row.user?.id).filter(Boolean)
+const assigneeIdsOf = (instance) => (instance.template?.assignees || []).map((row) => row.userId || row.user?.id).filter(Boolean)
 
 const canSeeInstance = (actor, instance, visibleUserIds, locationIds) => {
     if (actor.role === 'admin') return true
@@ -191,9 +189,7 @@ export const getReports = async (actor, { from, to, locationId }) => {
         }
         bump(byLocation.get(instance.locationId), outcome)
 
-        const assignees = (instance.template?.assignees || [])
-            .map((row) => row.user)
-            .filter(Boolean)
+        const assignees = (instance.template?.assignees || []).map((row) => row.user).filter(Boolean)
         const visibleAssignees = actor.role === 'user' ? assignees.filter((user) => user.id === actor.id) : assignees
         const completerIds = completerIdsOf(instance)
         visibleAssignees.forEach((user) => creditEmployee(user, employeeOutcome(user, outcome, completerIds)))

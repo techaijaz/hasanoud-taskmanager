@@ -18,11 +18,11 @@ Runs on the shared Hostinger VPS (`srv1915308`) with Docker Compose, next to the
 
 Containers (`docker compose ps` inside an environment folder):
 
-| Service | What it does |
-|---|---|
-| `web` | nginx serving the React build; proxies `/api` and `/uploads` to `api`. Only service with a port (127.0.0.1). |
-| `api` | Express API. Runs `prisma migrate deploy` on start. Exactly one instance (in-process rate limiter, cache and sync job). |
-| `mysql` | MySQL 8.4, data in `./data/mysql`. Reachable only inside the compose network. |
+| Service | What it does                                                                                                            |
+| ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `web`   | nginx serving the React build; proxies `/api` and `/uploads` to `api`. Only service with a port (127.0.0.1).            |
+| `api`   | Express API. Runs `prisma migrate deploy` on start. Exactly one instance (in-process rate limiter, cache and sync job). |
+| `mysql` | MySQL 8.4, data in `./data/mysql`. Reachable only inside the compose network.                                           |
 
 The host nginx (`/etc/nginx/sites-available/task.hasanoud.in`, template in `deploy/host-nginx.conf`) terminates HTTPS and proxies to the web container.
 

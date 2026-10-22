@@ -46,7 +46,11 @@ const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checke
     {...props}
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      {checked ? <span className="h-2 w-2 rounded-sm bg-primary" /> : <span className="h-2 w-2 rounded-sm border border-muted-foreground" />}
+      {checked ? (
+        <span className="h-2 w-2 rounded-sm bg-primary" />
+      ) : (
+        <span className="h-2 w-2 rounded-sm border border-muted-foreground" />
+      )}
     </span>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>

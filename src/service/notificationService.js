@@ -63,11 +63,11 @@ const mapRow = (row) => ({
     createdAt: row.createdAt,
     scheduledDate: row.instance?.scheduledDate,
     location: row.instance?.location,
-    template: row.instance?.template
-        ? { id: row.instance.template.id, title: row.instance.template.title }
-        : row.instance?.template,
+    template: row.instance?.template ? { id: row.instance.template.id, title: row.instance.template.title } : row.instance?.template,
     item: row.instanceItem,
-    assignees: assigneeRows(row.instance).map((item) => item.user).filter(Boolean)
+    assignees: assigneeRows(row.instance)
+        .map((item) => item.user)
+        .filter(Boolean)
 })
 
 const dedupeByItem = (rows) => {

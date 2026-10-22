@@ -14,7 +14,7 @@ export default (req, res, responseStatusCode, responseMessage, data = null) => {
         message: responseMessage,
         data: data
     }
-    
+
     // Log — never the payload: it can hold tokens and personal data
     logger.info('CONTROLLER_RESPONSE', {
         meta: {

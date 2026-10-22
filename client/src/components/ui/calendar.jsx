@@ -32,7 +32,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }) {
           buttonVariants({ variant: 'ghost' }),
           'h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground aria-selected:opacity-100'
         ),
-        selected: '[&_button]:bg-primary [&_button]:text-primary-foreground [&_button]:hover:bg-primary [&_button]:hover:text-primary-foreground',
+        selected:
+          '[&_button]:bg-primary [&_button]:text-primary-foreground [&_button]:hover:bg-primary [&_button]:hover:text-primary-foreground',
         today: '[&_button]:bg-accent [&_button]:text-accent-foreground',
         outside: 'text-muted-foreground opacity-50',
         disabled: 'text-muted-foreground opacity-50',

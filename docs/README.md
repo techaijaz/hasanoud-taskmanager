@@ -17,14 +17,14 @@ Important decisions get an **ADR** (Architecture Decision Record): what was deci
 
 ## Index
 
-| Area | Document | Status |
-|---|---|---|
-| Business | [requirements/business-overview.md](requirements/business-overview.md) | Captured, partly open |
-| Platform | [hld/platform-hld.md](hld/platform-hld.md) | Draft for review |
-| Employees + Attendance | [requirements/employee-management.md](requirements/employee-management.md) | Agreed |
-| Employees + Attendance | [lld/employee-attendance-lld.md](lld/employee-attendance-lld.md) | Draft for review |
-| Employees + Attendance | [testing/employee-attendance-test-cases.md](testing/employee-attendance-test-cases.md) | Draft for review |
-| Screens | [lld/mockups/](lld/mockups/) (open the `.html` files in a browser) | Agreed |
-| Decisions | [adr/](adr/) | Accepted |
+| Area                   | Document                                                                               | Status                |
+| ---------------------- | -------------------------------------------------------------------------------------- | --------------------- |
+| Business               | [requirements/business-overview.md](requirements/business-overview.md)                 | Captured, partly open |
+| Platform               | [hld/platform-hld.md](hld/platform-hld.md)                                             | Draft for review      |
+| Employees + Attendance | [requirements/employee-management.md](requirements/employee-management.md)             | Agreed                |
+| Employees + Attendance | [lld/employee-attendance-lld.md](lld/employee-attendance-lld.md)                       | Draft for review      |
+| Employees + Attendance | [testing/employee-attendance-test-cases.md](testing/employee-attendance-test-cases.md) | Draft for review      |
+| Screens                | [lld/mockups/](lld/mockups/) (open the `.html` files in a browser)                     | Agreed                |
+| Decisions              | [adr/](adr/)                                                                           | Accepted              |
 
 Deployment and operations: [../deploy/DEPLOY.md](../deploy/DEPLOY.md).

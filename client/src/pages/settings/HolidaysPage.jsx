@@ -235,7 +235,12 @@ export default function HolidaysPage() {
                       variant="ghost"
                       size="icon"
                       onClick={async () => {
-                        if (!window.confirm(row.locationId ? `Remove ${row.date}?` : `Remove ${row.date} for all locations?`)) return
+                        if (
+                          !window.confirm(
+                            row.locationId ? `Remove ${row.date}?` : `Remove ${row.date} for all locations?`
+                          )
+                        )
+                          return
                         try {
                           await holidaysApi.remove(row.id)
                           loadHolidays()
