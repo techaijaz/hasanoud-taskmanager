@@ -1,0 +1,97 @@
+<h2>HR manager / Admin: employee records</h2>
+<p class="subtitle">These are drawn as laptop screens, since most HR work is typing and checking documents. The same pages also work on a phone. Tell me in the terminal what to change.</p>
+
+<style>
+  .desk { border:2px solid #8884; border-radius:12px; overflow:hidden; background: var(--bg-primary,#fff); font-size:12.5px; margin-bottom:18px; }
+  .desk .top { display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #8883; background: var(--bg-secondary,#f6f6f6); }
+  .desk .body { display:flex; min-height:230px; }
+  .desk .side { width:150px; border-right:1px solid #8883; padding:10px; background: var(--bg-secondary,#f6f6f6); }
+  .desk .side div { padding:5px 7px; border-radius:6px; margin-bottom:2px; }
+  .desk .side .on { background:#2563eb; color:#fff; }
+  .desk .main { flex:1; padding:12px; }
+  table.t { width:100%; border-collapse:collapse; font-size:12px; }
+  table.t th, table.t td { text-align:left; padding:6px; border-bottom:1px solid #8882; }
+  table.t th { opacity:.7; font-weight:600; }
+  .pill { display:inline-block; padding:1px 7px; border-radius:99px; font-size:10.5px; }
+  .g { background:#16a34a22; color:#16a34a; } .o { background:#d9770622; color:#d97706; } .r { background:#dc262622; color:#dc2626; } .n { background:#8883; }
+  .btn { border:0; border-radius:7px; padding:5px 10px; font-weight:600; background:#16a34a; color:#fff; font-size:12px; }
+  .btn.blue { background:#2563eb; } .btn.red { background:#dc2626; } .btn.ghost { background:transparent; color:inherit; border:1px solid #8885; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+  .f label { display:block; opacity:.7; font-size:11px; margin-bottom:2px; }
+  .f div { border:1px solid #8885; border-radius:6px; padding:5px 7px; }
+  .muted { opacity:.65; font-size:11.5px; }
+  .card { border:1px solid #8883; border-radius:10px; padding:9px; margin-bottom:8px; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+</style>
+
+<h3>1) People list</h3>
+<div class="desk">
+  <div class="top"><b>Hasanoud Operations</b><span class="muted">Riya (HR Manager)</span></div>
+  <div class="body">
+    <div class="side"><div>Home</div><div>Tasks</div><div class="on">People</div><div>Approvals (5)</div><div>Attendance</div><div>Settings</div></div>
+    <div class="main">
+      <div class="row" style="margin-bottom:8px"><span><input class="mock-input" placeholder="Search name, code, phone" style="width:200px"> <span class="muted">Dept: All ▾ · Location: All ▾ · Status: Active ▾</span></span><button class="btn blue">+ New employee</button></div>
+      <table class="t">
+        <tr><th>Code</th><th>Name</th><th>Department</th><th>Location</th><th>Manager</th><th>Profile</th><th>Status</th></tr>
+        <tr><td>HO-001</td><td>Ravi Khan</td><td>Packaging</td><td>Warehouse</td><td>Salman</td><td><span class="pill g">Complete</span></td><td><span class="pill g">Active</span></td></tr>
+        <tr><td>HO-002</td><td>Sana Ali</td><td>Shop Sales</td><td>Shop</td><td>Salman</td><td><span class="pill o">2 docs pending</span></td><td><span class="pill g">Active</span></td></tr>
+        <tr><td>HO-003</td><td>Imran</td><td>Production</td><td>Warehouse</td><td>Riya</td><td><span class="pill r">Not filled</span></td><td><span class="pill g">Active</span></td></tr>
+        <tr><td>HO-004</td><td>Aman</td><td>Help Center</td><td>Warehouse</td><td>Riya</td><td><span class="pill g">Complete</span></td><td><span class="pill o">Notice · LWD 30 Nov</span></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h3>2) New employee (HR fills only the basics)</h3>
+<div class="desk">
+  <div class="top"><b>People › New employee</b><span class="muted">Code will be: <b>HO-005</b></span></div>
+  <div class="body"><div class="main">
+    <div class="grid">
+      <div class="f"><label>Full name</label><div>Faiz Ahmad</div></div>
+      <div class="f"><label>Company email (@hasanoud.com / .in only)</label><div>faiz@hasanoud.in</div></div>
+      <div class="f"><label>Phone</label><div>+91 98xxxxxx21</div></div>
+      <div class="f"><label>Joining date</label><div>01 Dec 2026</div></div>
+      <div class="f"><label>Department</label><div>Production ▾</div></div>
+      <div class="f"><label>Designation</label><div>Filler ▾</div></div>
+      <div class="f"><label>Locations (can punch at)</label><div>☑ Warehouse ☐ Shop</div></div>
+      <div class="f"><label>Reports to</label><div>Salman ▾</div></div>
+      <div class="f"><label>Employment type</label><div>Probation ▾</div></div>
+    </div>
+    <div class="row" style="margin-top:10px"><span class="muted">On save: an invite link goes to the company email. The employee fills the rest.</span><button class="btn">Save &amp; send invite</button></div>
+  </div></div>
+</div>
+
+<h3>3) Approvals (one place for everything waiting on HR)</h3>
+<div class="desk">
+  <div class="top"><b>Approvals</b><span class="muted">Profile · Documents · Changes</span></div>
+  <div class="body"><div class="main">
+    <div class="card">
+      <div class="row"><b>Sana Ali · HO-002</b><span class="pill o">Document</span></div>
+      <div class="muted">Aadhaar · uploaded 2 days ago · <u>View file</u> · Number: XXXX-XXXX-4821 <u>Show</u></div>
+      <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn">Approve</button><button class="btn red">Reject</button></div>
+    </div>
+    <div class="card">
+      <div class="row"><b>Ravi Khan · HO-001</b><span class="pill n">Change request</span></div>
+      <div class="muted">Address: <s>House 12, Old Street</s> → <b>Flat 4B, New Colony</b></div>
+      <div class="muted">Emergency contact: <s>Father · 98xx…</s> → <b>Brother · 99xx…</b></div>
+      <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn">Approve all</button><button class="btn red">Reject</button></div>
+    </div>
+    <div class="muted">"Show" on Aadhaar/PAN/bank numbers is written to the audit log (who saw it, when).</div>
+  </div></div>
+</div>
+
+<h3>4) Offboarding (on the employee page)</h3>
+<div class="desk">
+  <div class="top"><b>People › Aman · HO-004</b><span class="pill o">Notice</span></div>
+  <div class="body"><div class="main">
+    <div class="grid">
+      <div class="f"><label>Last working day</label><div>30 Nov 2026</div></div>
+      <div class="f"><label>Reason</label><div>Resigned ▾</div></div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <b>What happens on 30 Nov, night:</b>
+      <div class="muted">• Login stops · • 6 open tasks → <b>Riya</b> (his manager) · • 0 team members to move · • Record is kept forever</div>
+    </div>
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost">Cancel offboarding</button></div>
+  </div></div>
+</div>

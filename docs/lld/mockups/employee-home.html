@@ -1,0 +1,78 @@
+<h2>Employee ka phone: app kholte hi kya dikhe?</h2>
+<p class="subtitle">Sabse zyada use hone wali screen. Roz 2–4 baar punch, aur din mein kai baar tasks. Dono mein se kaunsa layout behtar lagta hai? Click karke chuno.</p>
+
+<style>
+  .phone { width: 260px; margin: 0 auto; border: 2px solid #8884; border-radius: 28px; padding: 14px 12px 10px; background: var(--bg-secondary, #f6f6f6); font-size: 13px; }
+  .phone .bar { display:flex; justify-content:space-between; font-size:11px; opacity:.6; margin-bottom:8px; }
+  .phone .hello { font-weight:600; font-size:15px; }
+  .phone .muted { opacity:.65; font-size:12px; }
+  .phone .card { background: var(--bg-primary, #fff); border:1px solid #8883; border-radius:12px; padding:10px; margin:8px 0; }
+  .phone .punch { display:block; width:100%; border:0; border-radius:50%; aspect-ratio:1; max-width:150px; margin:10px auto; background:#16a34a; color:#fff; font-size:17px; font-weight:700; }
+  .phone .punch.small { border-radius:10px; aspect-ratio:auto; max-width:none; padding:10px; font-size:14px; }
+  .phone .row { display:flex; justify-content:space-between; padding:3px 0; }
+  .phone .pill { display:inline-block; padding:1px 8px; border-radius:99px; font-size:11px; background:#16a34a22; color:#16a34a; }
+  .phone .pill.warn { background:#d9770622; color:#d97706; }
+  .phone .nav { display:flex; justify-content:space-around; border-top:1px solid #8883; margin-top:10px; padding-top:8px; font-size:11px; opacity:.75; }
+  .phone .nav b { opacity:1; }
+  .phone .task { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px dashed #8883; }
+  .phone .task:last-child { border-bottom:0; }
+</style>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Punch sabse upar (attendance pehle)</h3>
+      <p>App kholte hi bada Punch button. Uske neeche aaj ka hisaab, phir aaj ke tasks.</p>
+      <div class="phone">
+        <div class="bar"><span>9:58</span><span>📶 🔋</span></div>
+        <div class="hello">Salaam, Ravi 👋</div>
+        <div class="muted">Warehouse · Shift 10:00 – 7:00</div>
+        <button class="punch">Punch In</button>
+        <div class="muted" style="text-align:center">📍 Warehouse se 32 m · selfie lagegi</div>
+        <div class="card">
+          <div class="row"><b>Aaj</b><span class="pill warn">Punch baaki</span></div>
+          <div class="row muted"><span>Kaam</span><span>0 / 8 ghante</span></div>
+        </div>
+        <div class="card">
+          <div class="row"><b>Aaj ke tasks</b><span class="muted">3</span></div>
+          <div class="task"><span>Stock count – Oud 12ml</span><span class="muted">11:00</span></div>
+          <div class="task"><span>Packing area safai</span><span class="muted">1:00</span></div>
+        </div>
+        <div class="nav"><b>🏠 Home</b><span>✅ Tasks</span><span>🕘 Attendance</span><span>👤 Profile</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Dashboard (sab barabar)</h3>
+      <p>Upar chhota attendance card aur uska button, neeche tasks ki poori list. Punch ek tap door, lekin screen par jagah tasks ko zyada.</p>
+      <div class="phone">
+        <div class="bar"><span>9:58</span><span>📶 🔋</span></div>
+        <div class="hello">Salaam, Ravi 👋</div>
+        <div class="muted">Warehouse · Shift 10:00 – 7:00</div>
+        <div class="card">
+          <div class="row"><b>Attendance</b><span class="pill warn">Punch baaki</span></div>
+          <div class="row muted"><span>Kaam aaj</span><span>0 / 8 ghante</span></div>
+          <button class="punch small">Punch In</button>
+        </div>
+        <div class="card">
+          <div class="row"><b>Aaj ke tasks</b><span class="muted">3</span></div>
+          <div class="task"><span>Stock count – Oud 12ml</span><span class="pill warn">11:00</span></div>
+          <div class="task"><span>Packing area safai</span><span class="muted">1:00</span></div>
+          <div class="task"><span>Sticker roll check</span><span class="muted">4:00</span></div>
+          <div class="task"><span>Dispatch list verify</span><span class="muted">6:00</span></div>
+        </div>
+        <div class="nav"><b>🏠 Home</b><span>✅ Tasks</span><span>🕘 Attendance</span><span>👤 Profile</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p class="label">Dono mein same</p>
+  <p>Neeche 4 tabs: <b>Home, Tasks, Attendance</b> (apna mahine ka record aur sudhaar ki request), <b>Profile</b> (details, documents, change request). Manager aur HR ko inke alawa extra tabs milenge. Woh agli screens mein dikhaunga.</p>
+  <p class="subtitle">Note: yeh sirf layout ka sketch hai. Rang, font aur design baad mein final honge. Naam aur tasks example ke liye hain.</p>
+</div>

@@ -1,0 +1,89 @@
+<h2>Employee: punch karna aur apni attendance dekhna</h2>
+<p class="subtitle">Home ka layout B final hai. Yeh dikhata hai ki "Punch In" dabane ke baad kya hota hai, aur Attendance tab mein kya dikhega. Kuch badalna ho to terminal mein batao.</p>
+
+<style>
+  .flow { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .phone { width: 220px; border: 2px solid #8884; border-radius: 26px; padding: 12px 10px 10px; background: var(--bg-secondary, #f6f6f6); font-size: 12.5px; }
+  .phone .cap { text-align:center; font-weight:600; margin-bottom:8px; }
+  .phone .muted { opacity:.65; font-size:11.5px; }
+  .phone .card { background: var(--bg-primary, #fff); border:1px solid #8883; border-radius:12px; padding:9px; margin:7px 0; }
+  .phone .cam { height:150px; border-radius:12px; background:#1118; color:#fff; display:flex; align-items:center; justify-content:center; font-size:30px; }
+  .phone .btn { display:block; width:100%; border:0; border-radius:10px; padding:9px; margin-top:8px; font-weight:600; background:#16a34a; color:#fff; }
+  .phone .btn.ghost { background:transparent; color:inherit; border:1px solid #8885; }
+  .phone .ok { color:#16a34a; font-weight:700; font-size:15px; text-align:center; }
+  .phone .err { color:#dc2626; font-weight:700; font-size:14px; text-align:center; }
+  .phone .row { display:flex; justify-content:space-between; padding:2px 0; }
+  .cal { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; font-size:10.5px; }
+  .cal span { padding:4px 0; border-radius:6px; }
+  .p { background:#16a34a2a; } .l { background:#d977062e; } .i { background:#dc26262a; } .s { opacity:.4; } .h { background:#2563eb26; } .t { outline:2px solid #2563eb; }
+  .legend { font-size:10.5px; display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .legend i { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:3px; vertical-align:middle; }
+  .arrow { align-self:center; font-size:22px; opacity:.5; }
+</style>
+
+<h3>1) Punch In ka flow</h3>
+<div class="flow">
+  <div class="phone">
+    <div class="cap">① Selfie</div>
+    <div class="cam">🤳</div>
+    <div class="muted" style="text-align:center;margin-top:6px">Sirf front camera, live photo</div>
+    <button class="btn">Photo lo</button>
+  </div>
+  <div class="arrow">→</div>
+  <div class="phone">
+    <div class="cap">② Location check</div>
+    <div class="card" style="text-align:center">📍<br>Location dekh rahe hain…<br><span class="muted">GPS accuracy ±12 m</span></div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="phone">
+    <div class="cap">③a Theek hai</div>
+    <div class="card"><div class="ok">✅ Punch In ho gaya</div><div class="muted" style="text-align:center">10:03 AM · Warehouse<br>Aaj 3 min late</div></div>
+    <button class="btn ghost">Home par jao</button>
+  </div>
+  <div class="phone">
+    <div class="cap">③b Nahi hua</div>
+    <div class="card"><div class="err">❌ Punch nahi hua</div><div class="muted" style="text-align:center">Aap Warehouse se <b>340 m</b> door hain.<br>Limit: 100 m</div></div>
+    <button class="btn ghost">Dobara koshish karo</button>
+  </div>
+</div>
+
+<h3 style="margin-top:22px">2) Attendance tab</h3>
+<div class="flow">
+  <div class="phone" style="width:260px">
+    <div class="cap">November 2026</div>
+    <div class="card">
+      <div class="row"><span>Present</span><b>16</b></div>
+      <div class="row"><span>Late</span><b>3</b></div>
+      <div class="row"><span>Incomplete (sudhaar baaki)</span><b style="color:#dc2626">1</b></div>
+      <div class="row"><span>Absent</span><b>0</b></div>
+    </div>
+    <div class="cal">
+      <b>M</b><b>T</b><b>W</b><b>T</b><b>F</b><b>S</b><b>S</b>
+      <span></span><span></span><span></span><span></span><span></span><span></span><span class="s">1</span>
+      <span class="p">2</span><span class="p">3</span><span class="l">4</span><span class="p">5</span><span class="p">6</span><span class="p">7</span><span class="s">8</span>
+      <span class="p">9</span><span class="p">10</span><span class="p">11</span><span class="i t">12</span><span class="p">13</span><span class="l">14</span><span class="s">15</span>
+      <span class="p">16</span><span class="h">17</span><span class="p">18</span><span class="l">19</span><span class="p">20</span><span class="p">21</span><span class="s">22</span>
+    </div>
+    <div class="legend"><span><i class="p"></i>Present</span><span><i class="l"></i>Late</span><span><i class="i"></i>Incomplete</span><span><i class="h"></i>Holiday</span><span><i style="background:#8884"></i>Sunday</span></div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="phone" style="width:240px">
+    <div class="cap">12 Nov (din par tap)</div>
+    <div class="card">
+      <div class="row"><span>Status</span><b style="color:#dc2626">Incomplete</b></div>
+      <div class="row muted"><span>Warehouse</span><span>Shift 10–7</span></div>
+    </div>
+    <div class="card">
+      <div class="row"><span>🟢 In</span><span>09:58</span></div>
+      <div class="row"><span>🔴 Out (break)</span><span>01:30</span></div>
+      <div class="row"><span>🟢 In</span><span>02:25</span></div>
+      <div class="row"><span>🔴 Out</span><span style="color:#dc2626">— nahi kiya</span></div>
+    </div>
+    <button class="btn">Sudhaar ki request karo</button>
+    <div class="muted" style="margin-top:6px">→ Missing punch ka time + wajah → manager approve karega</div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px">
+  <p class="subtitle">Note: 7 din se purane din par "Sudhaar ki request" ka button nahi dikhega (jaisa tay hua). Selfie 40 din baad hat jayegi, lekin punch ka time aur location hamesha dikhenge.</p>
+</div>

@@ -1,0 +1,78 @@
+<h2>Manager: team attendance and requests</h2>
+<p class="subtitle">App labels are now in simple English. A manager sees everything an employee sees, plus a <b>Team</b> tab. Tell me in the terminal what to change.</p>
+
+<style>
+  .flow { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .phone { width: 250px; border: 2px solid #8884; border-radius: 26px; padding: 12px 10px 10px; background: var(--bg-secondary, #f6f6f6); font-size: 12.5px; }
+  .phone .cap { text-align:center; font-weight:600; margin-bottom:8px; }
+  .phone .muted { opacity:.65; font-size:11.5px; }
+  .phone .card { background: var(--bg-primary, #fff); border:1px solid #8883; border-radius:12px; padding:9px; margin:7px 0; }
+  .phone .row { display:flex; justify-content:space-between; align-items:center; padding:3px 0; }
+  .phone .btn { border:0; border-radius:8px; padding:6px 10px; font-weight:600; background:#16a34a; color:#fff; font-size:12px; }
+  .phone .btn.red { background:#dc2626; }
+  .phone .btn.ghost { background:transparent; color:inherit; border:1px solid #8885; }
+  .tabs { display:flex; gap:4px; margin-bottom:6px; } .tabs span { flex:1; text-align:center; padding:4px; border-radius:8px; font-size:11.5px; border:1px solid #8883; } .tabs .on { background:#2563eb; color:#fff; border-color:#2563eb; }
+  .pill { display:inline-block; padding:1px 7px; border-radius:99px; font-size:10.5px; }
+  .g { background:#16a34a22; color:#16a34a; } .o { background:#d9770622; color:#d97706; } .r { background:#dc262622; color:#dc2626; } .n { background:#8883; }
+  .nav { display:flex; justify-content:space-around; border-top:1px solid #8883; margin-top:8px; padding-top:7px; font-size:10.5px; opacity:.8; }
+</style>
+
+<div class="flow">
+  <div class="phone">
+    <div class="cap">Team › Today</div>
+    <div class="tabs"><span class="on">Today</span><span>Requests (2)</span><span>Month</span></div>
+    <div class="card">
+      <div class="row"><span>In now</span><b>9</b></div>
+      <div class="row"><span>Late</span><b>2</b></div>
+      <div class="row"><span>Not punched in</span><b style="color:#dc2626">1</b></div>
+    </div>
+    <div class="card">
+      <div class="row"><span>Ravi</span><span class="pill g">In 9:58</span></div>
+      <div class="row"><span>Imran</span><span class="pill o">Late 10:21</span></div>
+      <div class="row"><span>Sana</span><span class="pill g">On break</span></div>
+      <div class="row"><span>Aman</span><span class="pill r">Not in</span></div>
+      <div class="row"><span>Faiz</span><span class="pill n">Holiday</span></div>
+    </div>
+    <div class="nav"><span>Home</span><span>Tasks</span><span>Attendance</span><b>Team</b><span>Profile</span></div>
+  </div>
+
+  <div class="phone">
+    <div class="cap">Team › Requests</div>
+    <div class="tabs"><span>Today</span><span class="on">Requests (2)</span><span>Month</span></div>
+    <div class="card">
+      <div class="row"><b>Ravi</b><span class="muted">12 Nov</span></div>
+      <div class="muted">Missing: <b>Out at 7:05 PM</b></div>
+      <div class="muted">"Phone battery died"</div>
+      <div class="row" style="margin-top:6px"><button class="btn">Approve</button><button class="btn red">Reject</button></div>
+    </div>
+    <div class="card">
+      <div class="row"><b>Sana</b><span class="muted">14 Nov</span></div>
+      <div class="muted">Missing: <b>In at 10:00 AM</b></div>
+      <div class="muted">"Forgot to punch"</div>
+      <div class="row" style="margin-top:6px"><button class="btn">Approve</button><button class="btn red">Reject</button></div>
+    </div>
+    <div class="muted">Reject needs a reason. Every action goes to the audit log.</div>
+  </div>
+
+  <div class="phone">
+    <div class="cap">Team › Ravi › 12 Nov</div>
+    <div class="card">
+      <div class="row"><span>Status</span><span class="pill r">Incomplete</span></div>
+      <div class="row muted"><span>Warehouse</span><span>10–7 · 8h needed</span></div>
+    </div>
+    <div class="card">
+      <div class="row"><span>In</span><span>09:58 📷</span></div>
+      <div class="row"><span>Out</span><span>01:30 📷</span></div>
+      <div class="row"><span>In</span><span>02:25 📷</span></div>
+      <div class="row"><span>Out</span><span style="color:#dc2626">missing</span></div>
+    </div>
+    <div class="row"><button class="btn ghost">+ Add punch</button><button class="btn ghost">Edit</button></div>
+    <div class="muted" style="margin-top:6px">Manager can fix directly. A reason is required, and it is saved in history.</div>
+    <div class="card"><div class="muted"><b>History</b><br>— no changes yet</div></div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:14px">
+  <p class="label">Every morning</p>
+  <p>Notification to the manager: <i>"Yesterday: 1 absent, 2 incomplete in your team"</i>, which opens Team › Month.</p>
+</div>

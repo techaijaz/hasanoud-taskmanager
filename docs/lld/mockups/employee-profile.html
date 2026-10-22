@@ -1,0 +1,72 @@
+<h2>Employee: Profile tab</h2>
+<p class="subtitle">The first login shows a "Complete your profile" checklist. After that the same tab is used to see details and ask for changes. Tell me in the terminal what to change.</p>
+
+<style>
+  .flow { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .phone { width: 240px; border: 2px solid #8884; border-radius: 26px; padding: 12px 10px 10px; background: var(--bg-secondary, #f6f6f6); font-size: 12.5px; }
+  .phone .cap { text-align:center; font-weight:600; margin-bottom:8px; }
+  .muted { opacity:.65; font-size:11.5px; }
+  .card { background: var(--bg-primary, #fff); border:1px solid #8883; border-radius:12px; padding:9px; margin:7px 0; }
+  .row { display:flex; justify-content:space-between; align-items:center; padding:3px 0; gap:6px; }
+  .btn { display:block; width:100%; border:0; border-radius:10px; padding:8px; margin-top:6px; font-weight:600; background:#16a34a; color:#fff; font-size:12.5px; }
+  .btn.ghost { background:transparent; color:inherit; border:1px solid #8885; }
+  .pill { display:inline-block; padding:1px 7px; border-radius:99px; font-size:10.5px; }
+  .g { background:#16a34a22; color:#16a34a; } .o { background:#d9770622; color:#d97706; } .r { background:#dc262622; color:#dc2626; } .n { background:#8883; }
+  .f label { display:block; opacity:.7; font-size:11px; margin:6px 0 2px; }
+  .f div { border:1px solid #8885; border-radius:6px; padding:5px 7px; background: var(--bg-primary,#fff); }
+  .bar { height:6px; border-radius:99px; background:#8883; overflow:hidden; margin:4px 0 2px; } .bar i { display:block; height:100%; width:40%; background:#16a34a; }
+</style>
+
+<div class="flow">
+  <div class="phone">
+    <div class="cap">① First login</div>
+    <div class="card">
+      <b>Complete your profile</b>
+      <div class="bar"><i></i></div>
+      <div class="muted">2 of 5 done · You can punch in already</div>
+    </div>
+    <div class="card">
+      <div class="row"><span>✅ Basic info (by HR)</span></div>
+      <div class="row"><span>✅ Personal details</span><span class="pill o">Waiting for HR</span></div>
+      <div class="row"><span>◻ Emergency contact</span><span class="muted">›</span></div>
+      <div class="row"><span>◻ Bank details</span><span class="muted">›</span></div>
+      <div class="row"><span>◻ Documents (Aadhaar, PAN…)</span><span class="muted">›</span></div>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="cap">② Upload a document</div>
+    <div class="card f">
+      <label>Document</label><div>Aadhaar card ▾</div>
+      <label>Aadhaar number</label><div>1234 5678 4821</div>
+      <label>File (photo or PDF, max 5 MB)</label><div>📎 aadhaar-front.jpg</div>
+      <button class="btn">Send to HR</button>
+    </div>
+    <div class="card">
+      <div class="row"><span>PAN card</span><span class="pill g">Approved</span></div>
+      <div class="row"><span>Aadhaar</span><span class="pill o">Waiting</span></div>
+      <div class="row"><span>Bank proof</span><span class="pill r">Rejected</span></div>
+      <div class="muted">"Photo blurred, please upload again"</div>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="cap">③ Later: my profile</div>
+    <div class="card">
+      <div class="row"><b>Ravi Khan</b><span class="muted">HO-001</span></div>
+      <div class="muted">Packaging · Packer · Warehouse<br>Reports to Salman · Joined 12 Mar 2025</div>
+    </div>
+    <div class="card">
+      <div class="row"><span>Address</span><span class="muted">Flat 4B, New…</span></div>
+      <div class="row"><span>Emergency</span><span class="muted">Brother · 99xx…</span></div>
+      <div class="row"><span>Bank</span><span class="muted">XXXX 0912 · SBI</span></div>
+    </div>
+    <button class="btn ghost">Ask to change details</button>
+    <div class="card"><div class="row"><span>Change request · 18 Nov</span><span class="pill o">Waiting for HR</span></div></div>
+    <button class="btn ghost">Change password</button>
+  </div>
+</div>
+
+<div class="section" style="margin-top:14px">
+  <p class="subtitle">Note: the employee sees their own Aadhaar/PAN/bank numbers half hidden too. Basic info (department, manager, location) can only be changed by HR. The employee sees it but cannot ask to change it here.</p>
+</div>

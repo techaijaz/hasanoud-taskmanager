@@ -51,3 +51,6 @@ repomix-output.xml
 
 # Local Cursor skills (keep project rules)
 .cursor/skills/
+
+# Brainstorming companion session files
+.superpowers/
