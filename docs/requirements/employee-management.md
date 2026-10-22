@@ -10,7 +10,7 @@ Agreed with the business owner, October 2026. Each requirement has an ID used by
 | ID | Requirement |
 |---|---|
 | R-U1 | **Every employee has a login** and uses the app: own tasks, attendance, later salary slips. An employee *is* a platform user. |
-| R-U2 | Login only with a **company email**: `@hasanoud.com` or `@hasanoud.in`. Phone login stays available. |
+| R-U2 | Login only with a **company email**: `@hasanoud.in` (all employee emails are on .in; the domain list is a setting, so .com can be added later). Phone login stays available. |
 | R-U3 | Employees mostly use **Android** phones. The app is the existing web app, installable on the phone (PWA). |
 | R-U4 | App language: **simple English**, everyday words. |
 

@@ -1,6 +1,6 @@
 # Hasanoud Operations — design documents
 
-The platform at **operations.hasanoud.in** runs Hasanoud's day-to-day operations. Every capability (tasks, employees, attendance, later stock, purchase, orders, shipping, expenses) is a **feature of one platform**, not a separate app.
+The platform at **ops.hasanoud.in** runs Hasanoud's day-to-day operations. Every capability (tasks, employees, attendance, later stock, purchase, orders, shipping, expenses) is a **feature of one platform**, not a separate app.
 
 ## How we work
 

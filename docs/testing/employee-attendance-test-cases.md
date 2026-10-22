@@ -118,7 +118,7 @@ Status: **draft for review**. Covers [employee-management.md](../requirements/em
 |---|---|---|---|
 | PE-01 | E18, E7 | Riya creates an employee with basics | user + profile `HO-00n` + locations; invite email sent |
 | PE-02 | U2 | Email `faiz@gmail.com` | refused (company email only) |
-| PE-03 | U2 | Email `faiz@hasanoud.com` and `faiz@hasanoud.in` | both accepted |
+| PE-03 | U2 | Email `faiz@hasanoud.in`, then `faiz@hasanoud.com` | .in accepted; .com refused |
 | PE-04 | E7 | Two employees created at the same time | different codes, no gap reuse |
 | PE-05 | E7 | Next value 999 → 1000 | codes `HO-999` then `HO-1000` |
 | PE-06 | E20 | Employee submits personal details | `pending`; appears in Riya's Approvals |

@@ -4,7 +4,7 @@ Status: **draft for review**. Covers the whole platform at a high level; each mo
 
 ## 1. Goal
 
-One web platform at **operations.hasanoud.in** for Hasanoud's operations. Every capability is a **feature (module)** of the same app, sharing one login, one set of users and permissions, one database. The existing task manager becomes the first module.
+One web platform at **ops.hasanoud.in** for Hasanoud's operations. Every capability is a **feature (module)** of the same app, sharing one login, one set of users and permissions, one database. The existing task manager becomes the first module.
 
 ## 2. Shape: modular monolith ([ADR-001](../adr/001-modular-monolith.md))
 
@@ -19,7 +19,7 @@ flowchart LR
     DB[("mysql")]
     FILES[("data/uploads\nprivate files")]
   end
-  HOST["host nginx (HTTPS)\noperations.hasanoud.in"]
+  HOST["host nginx (HTTPS)\nops.hasanoud.in"]
   PWA --> HOST --> WEB --> API --> DB
   API --> FILES
   API -- "invite / reset emails" --> SMTP["Hostinger SMTP"]
@@ -66,5 +66,5 @@ flowchart LR
 
 ## 6. Domains
 
-- `operations.hasanoud.in` — the platform (new DNS record → VPS).
-- `task.hasanoud.in` — *proposed:* redirect to `operations.hasanoud.in` once it is live (to confirm).
+- `ops.hasanoud.in` — the platform (new DNS record → VPS).
+- `task.hasanoud.in` — *proposed:* redirect to `ops.hasanoud.in` once it is live (to confirm).

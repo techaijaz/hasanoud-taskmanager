@@ -147,7 +147,7 @@ Add / edit / remove a punch with a required reason. Edit = remove the old punch 
 
 ### 3.4 Onboarding (R-E18…E22)
 
-HR `POST /people`: create the user (no usable password, `isActive = true`) + profile (next code) + locations, all in one transaction. The email domain must be in `ALLOWED_EMAIL_DOMAINS` (`hasanoud.com,hasanoud.in`). Send the invite (the existing password-reset link, 7 days). The employee completes their profile; each part moves to `pending`; HR reviews in **Approvals**. `profileState` becomes `complete` when every required part is approved. Attendance works from `joiningDate` regardless of `profileState`.
+HR `POST /people`: create the user (no usable password, `isActive = true`) + profile (next code) + locations, all in one transaction. The email domain must be in `ALLOWED_EMAIL_DOMAINS` (`hasanoud.in`). Send the invite (the existing password-reset link, 7 days). The employee completes their profile; each part moves to `pending`; HR reviews in **Approvals**. `profileState` becomes `complete` when every required part is approved. Attendance works from `joiningDate` regardless of `profileState`.
 
 ### 3.5 Change request (R-E15, R-E16)
 
@@ -256,6 +256,6 @@ Approved mockups (open in a browser): `employee-home` (layout **B**), `employee-
 
 1. Build on a branch → **staging** (`/opt/hasanoud/staging`, own subdomain, HTTPS).
 2. Test on 2–3 real Android phones at the warehouse and the shop.
-3. Before launch: admin email moved to `@hasanoud`, GPS coordinates for the warehouse and the shop, departments and designations created, `FIELD_ENCRYPTION_KEY` set and backed up safely **outside** the server (lost key = encrypted numbers lost).
+3. Before launch: admin email moved to `@hasanoud.in`, GPS coordinates for the warehouse and the shop, departments and designations created, `FIELD_ENCRYPTION_KEY` set and backed up safely **outside** the server (lost key = encrypted numbers lost).
 4. **Pilot:** 3–5 employees for 1 week alongside SalaryBox; compare the daily results.
 5. All 15 employees. SalaryBox keeps running until the business switches it off.
