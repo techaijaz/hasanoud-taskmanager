@@ -54,6 +54,12 @@ describe('Logging and rate-limit keys', () => {
         expect(record.mock.calls.map(([arg]) => arg.event)).toEqual(['forbidden', 'server_error'])
     })
 
+    test('error log lines mask one-time tokens in the URL', () => {
+        const info = jest.spyOn(logger, 'info').mockImplementation(() => logger)
+        errorObject(new Error('expired'), { method: 'PUT', originalUrl: '/api/v1/reset-password/secret-token' }, 400)
+        expect(JSON.stringify(info.mock.calls)).not.toContain('secret-token')
+    })
+
     test('system logs need a login', async () => {
         const response = await request(app).get('/api/v1/system-logs')
         expect(response.statusCode).toBe(401)

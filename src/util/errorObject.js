@@ -3,6 +3,7 @@ import config from '../config/config.js'
 import { EApplicationEnvironment } from '../constant/application.js'
 import logger from './logger.js'
 import systemLogService from '../service/systemLogService.js'
+import requestPath from './requestPath.js'
 
 export default (error, req, errorStatusCode = 500) => {
     const errorObj = {
@@ -22,7 +23,7 @@ export default (error, req, errorStatusCode = 500) => {
     const logMeta = {
         requestId: req.id,
         statusCode: errorObj.statusCode,
-        request: { ...errorObj.request },
+        request: { ...errorObj.request, url: requestPath(req) },
         message: errorObj.message
     }
     if (errorStatusCode >= 500) {
