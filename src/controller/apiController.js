@@ -1,7 +1,10 @@
 import httpResponse from '../util/httpResponse.js'
 import responseMessage from '../constant/responseMessage.js'
 import httpError from '../util/httpError.js'
-import quiker from '../util/quiker.js'
+import prisma from '../config/prisma.js'
+
+// A dead DB connection can hang for the pool timeout (35s); monitors need an answer fast
+const DB_CHECK_TIMEOUT_MS = 3000
 
 export default {
     self: (req, res, next) => {
@@ -11,16 +14,21 @@ export default {
             httpError(next, error, req, 500)
         }
     },
-    health: (req, res, next) => {
+    // Public, polled by uptime monitors: says only whether the app can serve requests (DB included)
+    health: async (req, res, next) => {
+        let timer
         try {
-            const healthData = {
-                application: quiker.getApplicationHealth(),
-                system: quiker.getSystemHealth(),
-                timeStamp: Date.now()
-            }
-            httpResponse(req, res, 200, responseMessage.SUCCESS, healthData)
+            await Promise.race([
+                prisma.$queryRaw`SELECT 1`,
+                new Promise((_, reject) => {
+                    timer = setTimeout(() => reject(new Error('Database check timed out')), DB_CHECK_TIMEOUT_MS)
+                })
+            ])
+            httpResponse(req, res, 200, responseMessage.SUCCESS, { database: 'ok' })
         } catch (error) {
-            httpError(next, error, req, 500)
+            httpError(next, new Error(`Database unavailable: ${error.message}`), req, 503)
+        } finally {
+            clearTimeout(timer)
         }
     }
 }
