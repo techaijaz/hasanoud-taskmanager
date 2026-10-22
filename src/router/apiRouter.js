@@ -3,7 +3,8 @@ import apiController from '../controller/apiController.js'
 import { apiRateLimit, authRateLimit } from '../middleware/rateLimit.js'
 import userController from '../controller/userController.js'
 import authentication from '../middleware/authentication.js'
-import { authorizeManageUsers, authorizePermission } from '../middleware/authorize.js'
+import { authorizeManageUsers, authorizePermission, authorizeRoles } from '../middleware/authorize.js'
+import { getSystemLogs } from '../controller/systemLogController.js'
 import userManagementRouter from './userManagementRouter.js'
 import rbacRouter from './rbacRouter.js'
 import locationRouter from './locationRouter.js'
@@ -41,5 +42,6 @@ router.use('/task-templates', authentication, authorizePermission('taskList', 'c
 router.use('/task-instances', authentication, authorizePermission('taskBoard', 'canView'), taskInstanceRouter)
 router.use('/notifications', authentication, notificationRouter)
 router.use('/reports', authentication, authorizePermission('reports', 'canView'), reportRouter)
+router.route('/system-logs').get(authentication, authorizeRoles('admin'), getSystemLogs)
 
 export default router

@@ -3,7 +3,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { cn } from '@/lib/utils'
 
 export default function SettingsLayout() {
-  const { canManageUsers, canManageRbac, canManageLocations, canManageHolidays } = usePermissions()
+  const { isAdmin, canManageUsers, canManageRbac, canManageLocations, canManageHolidays } = usePermissions()
 
   const links = [
     { to: '/settings/profile', label: 'Profile', show: true },
@@ -11,7 +11,8 @@ export default function SettingsLayout() {
     { to: '/settings/permissions', label: 'Permission', show: canManageRbac },
     { to: '/settings/locations', label: 'Locations', show: canManageLocations },
     { to: '/settings/holidays', label: 'Holiday', show: canManageHolidays },
-    { to: '/settings/notifications', label: 'Notification', show: true }
+    { to: '/settings/notifications', label: 'Notification', show: true },
+    { to: '/settings/system-logs', label: 'System logs', show: isAdmin }
   ].filter((item) => item.show)
 
   return (

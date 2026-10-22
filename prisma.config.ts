@@ -1,7 +1,7 @@
 import dotenvFlow from 'dotenv-flow'
 import { defineConfig } from 'prisma/config'
 
-dotenvFlow.config()
+dotenvFlow.config({ silent: true })
 
 const databaseUrl = () => {
     if (process.env.DATABASE_URL) return process.env.DATABASE_URL

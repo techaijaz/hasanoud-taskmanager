@@ -254,6 +254,8 @@ New RBAC modules: **`people`**, **`peopleSensitive`**, **`attendanceManage`**.
 | `FIELD_ENCRYPTION_KEY` missing or invalid | API does not start                                              |
 | Document > 5 MB or not an image/PDF       | Refused before upload                                           |
 | Invite to a non-company email             | Refused                                                         |
+| Too many punches                          | `POST /attendance/punches`: 5 per minute per user, then 429     |
+| Too many uploads                          | Selfie and document uploads: 20 per minute per user, then 429   |
 
 ## 8. Points to confirm in review
 

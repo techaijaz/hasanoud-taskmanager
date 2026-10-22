@@ -274,3 +274,23 @@ model TaskNotification {
   @@index([instanceItemId])
   @@map("task_notifications")
 }
+
+// Important events for the admin "System logs" screen (all request lines stay in the file log).
+// No relation to users: a log row must outlive the user it mentions.
+model SystemLog {
+  id        String   @id @default(uuid())
+  level     String   @db.VarChar(10)
+  event     String   @db.VarChar(50)
+  message   String   @db.VarChar(500)
+  requestId String?  @db.VarChar(36)
+  userId    String?  @db.VarChar(36)
+  ip        String?  @db.VarChar(45)
+  method    String?  @db.VarChar(10)
+  path      String?  @db.VarChar(255)
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([event, createdAt])
+  @@map("system_logs")
+}

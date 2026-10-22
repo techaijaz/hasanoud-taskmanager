@@ -1,7 +1,7 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible'
 
-// General API traffic: many staff can share one office IP (NAT), and the
-// client polls notifications every 30s, so this limit must stay generous.
+// General API traffic, counted per logged-in user (per IP before login).
+// The client polls notifications every 30s, so this limit must stay generous.
 export let apiRateLimiter = null
 const API_POINTS = 300
 const API_DURATION = 60

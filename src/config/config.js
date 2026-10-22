@@ -1,6 +1,7 @@
 import dotenvFlow from 'dotenv-flow'
 
-dotenvFlow.config()
+// silent: in Docker the env comes from the container, so a missing .env file is expected
+dotenvFlow.config({ silent: true })
 
 // Express "trust proxy": hop count, true/false, or a list like "loopback, 10.0.0.0/8".
 // Default trusts only a reverse proxy on the same host (e.g. nginx on 127.0.0.1).

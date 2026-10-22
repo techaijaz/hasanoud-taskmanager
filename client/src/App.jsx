@@ -18,6 +18,7 @@ import PermissionsPage from '@/pages/settings/PermissionsPage'
 import LocationsPage from '@/pages/settings/LocationsPage'
 import HolidaysPage from '@/pages/settings/HolidaysPage'
 import NotificationsPage from '@/pages/settings/NotificationsPage'
+import SystemLogsPage from '@/pages/settings/SystemLogsPage'
 
 function ThemedToaster() {
   const { theme } = useTheme()
@@ -73,6 +74,7 @@ export default function App() {
                 <Route path="locations" element={<LocationsPage />} />
                 <Route path="holidays" element={<HolidaysPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="system-logs" element={<SystemLogsPage />} />
               </Route>
               <Route path="/" element={<Navigate to="/board" replace />} />
             </Route>

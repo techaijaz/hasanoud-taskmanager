@@ -6,8 +6,10 @@ import rbacService from './service/rbacService.js'
 import { initRateLimiter } from './config/rateLimiter.js'
 import * as taskInstanceService from './service/taskInstanceService.js'
 import { todayIstYmd } from './util/ist.js'
+import systemLogService from './service/systemLogService.js'
 
 const NOTIFICATION_SYNC_MS = 2 * 60 * 1000
+const LOG_PURGE_MS = 6 * 60 * 60 * 1000
 
 const syncMissedTasks = async () => {
     try {
@@ -16,11 +18,31 @@ const syncMissedTasks = async () => {
         await taskInstanceService.reconcileDate(ymd)
     } catch (error) {
         logger.error('MISSED_TASK_SYNC', { meta: error })
+        void systemLogService.record({
+            level: 'error',
+            event: 'job_failed',
+            message: `Missed task sync: ${error?.message}`,
+            meta: { job: 'missed_task_sync' }
+        })
     }
 }
 
-// Startup failures also go to stderr: the file logger is the only transport in production,
-// so without this `pm2 logs` shows nothing while the app crash-loops
+const purgeSystemLogs = async () => {
+    try {
+        await systemLogService.purgeOld()
+    } catch (error) {
+        logger.error('SYSTEM_LOG_PURGE', { meta: error })
+        void systemLogService.record({
+            level: 'error',
+            event: 'job_failed',
+            message: `System log purge: ${error?.message}`,
+            meta: { job: 'system_log_purge' }
+        })
+    }
+}
+
+// Startup failures also go to stderr as one short line with the real driver reason,
+// so `docker compose logs api` shows why the app is crash-looping
 const reportFatal = (label, error) => {
     // Prisma/mariadb nest the real reason (e.g. ECONNREFUSED, Access denied) a few levels down
     const driverCause = error?.meta?.driverAdapterError?.cause || error?.cause
@@ -56,6 +78,9 @@ server.on('error', (error) => {
         await syncMissedTasks()
         setInterval(syncMissedTasks, NOTIFICATION_SYNC_MS)
         logger.info('MISSED TASK SYNC READY')
+
+        await purgeSystemLogs()
+        setInterval(purgeSystemLogs, LOG_PURGE_MS)
     } catch (error) {
         logger.error('APPLICATION START ERROR', { meta: error })
         reportFatal('APPLICATION START ERROR', error)

@@ -64,6 +64,10 @@ export const notificationsApi = {
   unreadCount: () => api.get('/notifications/unread-count').then(unwrap)
 }
 
+export const systemLogsApi = {
+  list: (params) => api.get('/system-logs', { params }).then(unwrap)
+}
+
 export const reportsApi = {
   get: (params) => api.get('/reports', { params }).then(unwrap)
 }

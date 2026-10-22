@@ -2,6 +2,7 @@ import responseMessage from '../constant/responseMessage.js'
 import config from '../config/config.js'
 import { EApplicationEnvironment } from '../constant/application.js'
 import logger from './logger.js'
+import systemLogService from '../service/systemLogService.js'
 
 export default (error, req, errorStatusCode = 500) => {
     const errorObj = {
@@ -19,6 +20,7 @@ export default (error, req, errorStatusCode = 500) => {
 
     // Log — skip `data`: it can echo request bodies or Prisma query details
     const logMeta = {
+        requestId: req.id,
         statusCode: errorObj.statusCode,
         request: { ...errorObj.request },
         message: errorObj.message
@@ -26,7 +28,11 @@ export default (error, req, errorStatusCode = 500) => {
     if (errorStatusCode >= 500) {
         logMeta.trace = errorObj.trace
         logger.error('CONTROLLER_RESPONSE', { meta: logMeta })
+        void systemLogService.record({ level: 'error', event: 'server_error', message: errorObj.message, req, meta: { stack: error?.stack || null } })
     } else {
+        if (errorStatusCode === 403) {
+            void systemLogService.record({ event: 'forbidden', message: errorObj.message, req })
+        }
         logger.info('CONTROLLER_RESPONSE', { meta: logMeta })
     }
 

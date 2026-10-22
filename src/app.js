@@ -7,6 +7,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import config from './config/config.js'
+import requestLog from './middleware/requestLog.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -17,6 +18,7 @@ const app = express()
 app.set('trust proxy', config.TRUST_PROXY)
 
 // Middlewares
+app.use(requestLog)
 app.use(helmet())
 app.use(cookieParser())
 app.use(

@@ -18,6 +18,7 @@ import config from '../config/config.js'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 import rbacService from '../service/rbacService.js'
+import systemLogService from '../service/systemLogService.js'
 dayjs.extend(utc)
 
 const resolveLoginUser = async ({ email, phone }) => {
@@ -102,10 +103,12 @@ export default {
 
             // * validate password
             if (!user) {
+                void systemLogService.record({ event: 'login_failed', message: 'Unknown user', req, meta: { email, phone } })
                 return httpError(next, new Error(responceMessage.NOT_FOUND('User')), req, 404)
             }
             const isPasswordMatch = await quiker.comparePassword(password, user.password)
             if (!isPasswordMatch) {
+                void systemLogService.record({ event: 'login_failed', message: 'Wrong password', req, userId: user.id, meta: { email, phone } })
                 return httpError(next, new Error(responceMessage.INVALID_CREDENTIALS), req, 404)
             }
 

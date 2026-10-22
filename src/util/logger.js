@@ -45,6 +45,9 @@ const consoleTransport = () => {
             })
         ]
     }
+    if (config.ENV === EApplicationEnvironment.PRODUCTION) {
+        return [new transports.Console({ level: 'info', format: format.combine(format.timestamp(), fileFormate) })]
+    }
     return []
 }
 
@@ -72,7 +75,7 @@ const fileFormate = format.printf((info) => {
         meta: logMeta
     }
 
-    return JSON.stringify(logData, null, 4)
+    return JSON.stringify(logData)
 })
 
 const fileTransport = () => {

@@ -63,6 +63,8 @@ flowchart LR
 - **Time:** all business rules in **IST**; server time is the source of truth.
 - **Data:** nothing is hard-deleted where history matters (employees, punches, approvals). Records are deactivated or marked.
 - **Environments:** production (`/opt/hasanoud/production`) and **staging** (`/opt/hasanoud/staging`, needed before the attendance launch — GPS and camera need HTTPS on real phones).
+- **Logging:** two places. **File** (`data/logs`, also on stdout for `docker compose logs`): one JSON line per entry, one line per request (request id, method, path, status, ms, user); 10 MB x 5 files. **Database** (`system_logs`, admin screen Settings → System logs): only important events: `server_error`, `login_failed`, `rate_limited`, `forbidden`, `job_failed`; kept 90 days. If the DB is down, events still reach the file. Passwords, tokens and request bodies are never logged. `audit_logs` is separate: the business record of who changed what.
+- **Rate limits:** logged-in traffic 300 requests/min **per user** (shop staff share one WiFi IP); before login 300/min per IP; login and password endpoints 10/min per IP. The first blocked request in each window writes a `rate_limited` event.
 - **Backups:** daily MySQL dump + uploads on the server (14 days) and off-site copy to S3 (90 days). See [deploy/DEPLOY.md](../../deploy/DEPLOY.md).
 
 ## 6. Domains

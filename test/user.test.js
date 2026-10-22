@@ -3,14 +3,18 @@ import request from 'supertest'
 import app from '../src/app.js'
 import databaseService from '../src/service/databaseService.js'
 import prisma from '../src/config/prisma.js'
+import systemLogService from '../src/service/systemLogService.js'
 
 describe('User Authentication API', () => {
     let findUserSpy
+    let recordSpy
 
     beforeEach(() => {
         jest.clearAllMocks()
         // Use spyOn instead of jest.mock for ESM compatibility in this setup
         findUserSpy = jest.spyOn(databaseService, 'findUserByEmail')
+        // No DB in unit tests
+        recordSpy = jest.spyOn(systemLogService, 'record').mockResolvedValue()
     })
 
     afterAll(async () => {
@@ -40,6 +44,7 @@ describe('User Authentication API', () => {
             const response = await request(app).post('/api/v1/login').send({ email: 'wrong@example.com', password: 'password123' })
 
             expect(response.statusCode).toBe(404)
+            expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ event: 'login_failed' }))
         })
     })
 })
