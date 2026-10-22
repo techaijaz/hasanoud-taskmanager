@@ -70,4 +70,5 @@ flowchart LR
 ## 6. Domains
 
 - `ops.hasanoud.in` — the platform (new DNS record → VPS).
-- `task.hasanoud.in` — _proposed:_ redirect to `ops.hasanoud.in` once it is live (to confirm).
+- `staging.ops.hasanoud.in` — staging (test data only, email caught by Mailpit).
+- `task.hasanoud.in` — retired (October 2026, before launch); the DNS record was renamed to `ops`.

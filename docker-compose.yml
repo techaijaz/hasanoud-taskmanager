@@ -1,6 +1,6 @@
 # Hasanoud Task Manager on a shared VPS. See deploy/DEPLOY.md.
 #
-#   host nginx (HTTPS, task.hasanoud.in) -> 127.0.0.1:${HTTP_PORT} -> web (nginx + React build)
+#   host nginx (HTTPS, ops.hasanoud.in) -> 127.0.0.1:${HTTP_PORT} -> web (nginx + React build)
 #                                                                  -> /api, /uploads -> api (Express)
 #                                                                                       -> mysql
 #
