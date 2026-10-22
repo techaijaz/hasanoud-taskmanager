@@ -96,6 +96,8 @@ No new role. HR powers come from permissions ([ADR-003](../adr/003-hr-is-a-permi
 
 **audit_logs** — `id`, `actorId`, `action` (e.g. `attendance.punch.add`, `people.document.approve`, `people.sensitive.reveal`), `entityType`, `entityId`, `before` JSON, `after` JSON, `reason`, `createdAt`. Append only.
 
+**notifications** — the in-app inbox and the push queue in one table (outbox pattern). `id`, `userId`, `type` (e.g. `attendance.punch_in_reminder`, `attendance.correction_requested`), `title`, `body`, `link` (screen opened on tap), `readAt`, `pushStatus` (`pending, sent, failed, skipped`), `attempts`, `nextAttemptAt`, `sentAt`, `dedupeKey` unique, `createdAt`. Index on (`pushStatus`, `nextAttemptAt`) and (`userId`, `createdAt`). See §4.1. The existing `TaskNotification` table stays as it is for now; tasks move onto this table later, as separate work.
+
 **files** — `id`, `storageKey`, `mimeType`, `sizeBytes`, `kind` (`selfie, document, photo`), `ownerUserId`, `createdAt`, `deletedAt`. Files live under `data/uploads/private/` and are served only through `GET /api/v1/files/:id` after a permission check (the current public `/uploads` route is not used for these).
 
 ### 1.5 Encryption of sensitive numbers
@@ -179,29 +181,47 @@ Rejoin: HR reactivates the same record (same code), sets a new joining date, and
 
 Each job records its last successful run, so a restart does not send reminders twice.
 
+### 4.1 Notifications
+
+No separate queue service (Redis/BullMQ). The `notifications` table is the queue.
+
+1. **Create:** the code that causes a notification (fix request, approval, reminder job) inserts the row **in the same transaction** as its own change, with `pushStatus = pending`. If the change rolls back, no notification exists; if it commits, the notification is never lost.
+2. **No duplicates:** `dedupeKey` is unique, e.g. `attendance.punch_in_reminder:<userId>:<ymd>`. A second insert with the same key is ignored, so "once per day" holds even after a restart.
+3. **Send:** a dispatcher inside the API runs every 15 s. It takes up to 50 rows where `pushStatus = pending` and `nextAttemptAt <= now` using `SELECT … FOR UPDATE SKIP LOCKED` (safe if a second API instance ever runs), and sends Web Push (VAPID) to each of the user's `push_subscriptions`.
+   - At least one device accepted → `sent`, `sentAt`.
+   - The user has no subscription → `skipped` (the in-app inbox still shows it).
+   - Error → `attempts + 1`, retry after 1 min, 5 min, 30 min; after the 3rd failure → `failed`.
+   - Push service answers 404/410 (subscription gone) → delete that subscription.
+4. **The request never waits for push:** a punch saves and returns at once; delivery happens in the background.
+5. **Inbox:** the bell icon lists the user's latest notifications; opening one sets `readAt`.
+6. **Clean-up:** the 03:00 job also deletes notifications older than 90 days.
+
+Move to Redis/BullMQ only when needed: thousands of messages at once (e.g. WhatsApp campaigns, bulk order sync) or many delayed jobs.
+
 ---
 
 ## 5. API (summary)
 
 All routes are under `/api/v1`, need a login, and the permission check runs on the server.
 
-| Method            | Path                                                                                  | Who                                                     |
-| ----------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| GET               | `/attendance/me/today`, `/attendance/me?month=`                                       | Self                                                    |
-| POST              | `/attendance/punches`                                                                 | Self                                                    |
-| POST              | `/attendance/corrections`                                                             | Self                                                    |
-| GET               | `/attendance/team/today`, `/attendance/team?month=`                                   | Manager (team), Attendance manage (all)                 |
-| GET/POST          | `/attendance/corrections/pending`, `/:id/approve`, `/:id/reject`                      | Manager (team), Attendance manage                       |
-| POST/PATCH/DELETE | `/attendance/punches/manual…`                                                         | Manager (team), Attendance manage — reason required     |
-| POST/DELETE       | `/notifications/push-subscriptions`                                                   | Self                                                    |
-| GET               | `/people`, `/people/:id`                                                              | People view (managers: team, basic fields only)         |
-| POST              | `/people`                                                                             | People create                                           |
-| PATCH             | `/people/:id` (basic), `/people/:id/offboard`, `/people/:id/rejoin`                   | People edit                                             |
-| GET/PATCH         | `/people/me`, `/people/me/change-requests`, `/people/me/documents`, `/people/me/bank` | Self                                                    |
-| GET/POST          | `/people/approvals`, `…/:id/approve`, `…/:id/reject`                                  | People sensitive                                        |
-| POST              | `/people/:id/reveal` (`field`)                                                        | People sensitive — audited                              |
-| CRUD              | `/people/departments`, `/people/designations`                                         | People edit                                             |
-| GET               | `/files/:id`                                                                          | Owner of the file, or a role allowed to see that record |
+| Method            | Path                                                                                                                                       | Who                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| GET               | `/attendance/me/today`, `/attendance/me?month=`                                                                                            | Self                                                    |
+| POST              | `/attendance/punches`                                                                                                                      | Self                                                    |
+| POST              | `/attendance/corrections`                                                                                                                  | Self                                                    |
+| GET               | `/attendance/team/today`, `/attendance/team?month=`                                                                                        | Manager (team), Attendance manage (all)                 |
+| GET/POST          | `/attendance/corrections/pending`, `/:id/approve`, `/:id/reject`                                                                           | Manager (team), Attendance manage                       |
+| POST/PATCH/DELETE | `/attendance/punches/manual…`                                                                                                              | Manager (team), Attendance manage — reason required     |
+| POST/DELETE       | `/notifications/push-subscriptions`                                                                                                        | Self                                                    |
+| GET/PATCH         | `/notifications/inbox`, `/notifications/inbox/:id/read` (the existing task routes `/notifications` and `/notifications/unread-count` stay) | Self                                                    |
+| GET               | `/people`, `/people/:id`                                                                                                                   | People view (managers: team, basic fields only)         |
+| POST              | `/people`                                                                                                                                  | People create                                           |
+| PATCH             | `/people/:id` (basic), `/people/:id/offboard`, `/people/:id/rejoin`                                                                        | People edit                                             |
+| GET/PATCH         | `/people/me`, `/people/me/change-requests`, `/people/me/documents`, `/people/me/bank`                                                      | Self                                                    |
+| GET/POST          | `/people/approvals`, `…/:id/approve`, `…/:id/reject`                                                                                       | People sensitive                                        |
+| POST              | `/people/:id/reveal` (`field`)                                                                                                             | People sensitive — audited                              |
+| CRUD              | `/people/departments`, `/people/designations`                                                                                              | People edit                                             |
+| GET               | `/files/:id`                                                                                                                               | Owner of the file, or a role allowed to see that record |
 
 ---
 

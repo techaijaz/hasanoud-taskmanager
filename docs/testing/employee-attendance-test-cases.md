@@ -112,6 +112,21 @@ Status: **draft for review**. Covers [employee-management.md](../requirements/em
 | RM-11 | —   | API restarts at 10:16 after a reminder at 10:15 | no repeat push                                                                       |
 | RM-12 | A21 | User has no push subscription                   | no error; job continues for others                                                   |
 
+### 5.1 Notification delivery (A, push service mocked)
+
+| ID    | Req | Setup                                                      | Expected                                                               |
+| ----- | --- | ---------------------------------------------------------- | ---------------------------------------------------------------------- |
+| NT-01 | A17 | Ravi sends a fix request                                   | one `pending` notification for Salman, created in the same transaction |
+| NT-02 | A17 | Fix request insert fails and rolls back                    | no notification row                                                    |
+| NT-03 | A21 | Reminder job runs twice for Ravi on the same day (restart) | one row only (`dedupeKey`)                                             |
+| NT-04 | —   | Dispatcher runs; push service accepts                      | `sent`, `sentAt` set                                                   |
+| NT-05 | —   | Push service errors 3 times                                | retries after 1, 5, 30 min; then `failed`                              |
+| NT-06 | —   | Push service answers 410 for one of Ravi's two devices     | that subscription deleted; other device gets it; row `sent`            |
+| NT-07 | A21 | User has no subscription                                   | `skipped`; still listed in the inbox                                   |
+| NT-08 | —   | Two dispatchers run at the same time                       | each row sent once (`SKIP LOCKED`)                                     |
+| NT-09 | —   | Ravi opens a notification in the inbox                     | `readAt` set; Sana cannot read or mark Ravi's notifications            |
+| NT-10 | —   | Notification 91 days old, 03:00 job                        | deleted                                                                |
+
 ## 6. People — onboarding, profile, documents (A)
 
 | ID    | Req     | Steps                                                          | Expected                                                                        |
