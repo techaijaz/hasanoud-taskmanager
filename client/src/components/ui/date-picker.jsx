@@ -4,22 +4,7 @@ import { CalendarDays } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-
-export function ymdToDate(ymd) {
-  if (!ymd) return undefined
-  const [year, month, day] = String(ymd).split('-').map(Number)
-  if (!year || !month || !day) return undefined
-  return new Date(year, month - 1, day)
-}
-
-export function dateToYmd(date) {
-  if (!date) return ''
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
+import { cn, dateToYmd, ymdToDate } from '@/lib/utils'
 
 export function DatePicker({ id, value, onChange, placeholder = 'Pick a date', className, disabled, minDate }) {
   const [open, setOpen] = useState(false)

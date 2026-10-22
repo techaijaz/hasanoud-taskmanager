@@ -108,7 +108,7 @@ export default function TaskListPage() {
       })
       .catch((error) => toast.error(apiMessage(error)))
     load()
-  }, [])
+  }, [currentUser?.id])
 
   const openCreate = () => {
     setEditingId(null)
@@ -132,7 +132,9 @@ export default function TaskListPage() {
       weekdays: Array.isArray(row.weekdays) && row.weekdays.length ? row.weekdays : [1],
       scheduledDate: row.scheduledDate || '',
       assigneeIds: (row.assignees || []).map((user) => user.id),
-      items: (row.items || []).map((item) => ({ id: item.id, title: item.title, dueTime: item.dueTime })).concat((row.items || []).length ? [] : [emptyItem()])
+      items: (row.items || [])
+        .map((item) => ({ id: item.id, title: item.title, dueTime: item.dueTime }))
+        .concat((row.items || []).length ? [] : [emptyItem()])
     })
     setOpen(true)
   }
@@ -141,7 +143,9 @@ export default function TaskListPage() {
     if (!editingId && currentUser?.id === id) return
     setForm((prev) => ({
       ...prev,
-      assigneeIds: prev.assigneeIds.includes(id) ? prev.assigneeIds.filter((item) => item !== id) : [...prev.assigneeIds, id]
+      assigneeIds: prev.assigneeIds.includes(id)
+        ? prev.assigneeIds.filter((item) => item !== id)
+        : [...prev.assigneeIds, id]
     }))
   }
 
@@ -197,7 +201,9 @@ export default function TaskListPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Task List</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Main tasks for today. Status updates as sub tasks are completed.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Main tasks for today. Status updates as sub tasks are completed.
+          </p>
         </div>
         {can('taskList', 'canCreate') && !isInactiveView && (
           <Button onClick={openCreate} disabled={!options.locations.length}>
@@ -281,7 +287,10 @@ export default function TaskListPage() {
           const statusLabel =
             status?.key === 'in_progress' ? `In progress (${status.doneCount} of ${status.itemCount})` : meta?.label
           return (
-            <article key={row.id} className="flex items-start justify-between gap-3 rounded-lg border bg-card px-4 py-3">
+            <article
+              key={row.id}
+              className="flex items-start justify-between gap-3 rounded-lg border bg-card px-4 py-3"
+            >
               <div className="min-w-0 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-medium">{row.title}</h3>
@@ -365,187 +374,200 @@ export default function TaskListPage() {
           </DialogHeader>
           <form className="flex min-h-0 flex-1 flex-col" onSubmit={save}>
             <div className="scrollbar-none min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-1">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Location</Label>
-                <Select value={form.locationId} onValueChange={(value) => setForm({ ...form, locationId: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {options.locations.map((loc) => (
-                      <SelectItem key={loc.id} value={loc.id}>
-                        {loc.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Priority</Label>
-                <Select value={form.priority} onValueChange={(value) => setForm({ ...form, priority: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Type</Label>
-              <Select value={form.kind} onValueChange={(value) => setForm({ ...form, kind: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recurring">Recurring</SelectItem>
-                  <SelectItem value="one_time">One-time</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {form.kind === 'one_time' ? (
-              <div className="space-y-2">
-                <Label htmlFor="scheduledDate">Date</Label>
-                <DatePicker
-                  id="scheduledDate"
-                  value={form.scheduledDate}
-                  onChange={(scheduledDate) => setForm({ ...form, scheduledDate })}
-                  placeholder="Pick a date"
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  required
                 />
               </div>
-            ) : (
-              <>
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Repeat</Label>
-                  <Select value={form.recurrence} onValueChange={(value) => setForm({ ...form, recurrence: value })}>
+                  <Label>Location</Label>
+                  <Select value={form.locationId} onValueChange={(value) => setForm({ ...form, locationId: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {options.locations.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.id}>
+                          {loc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Priority</Label>
+                  <Select value={form.priority} onValueChange={(value) => setForm({ ...form, priority: value })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="custom">Custom days</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                {form.recurrence === 'weekly' && (
+              </div>
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={form.kind} onValueChange={(value) => setForm({ ...form, kind: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recurring">Recurring</SelectItem>
+                    <SelectItem value="one_time">One-time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {form.kind === 'one_time' ? (
+                <div className="space-y-2">
+                  <Label htmlFor="scheduledDate">Date</Label>
+                  <DatePicker
+                    id="scheduledDate"
+                    value={form.scheduledDate}
+                    onChange={(scheduledDate) => setForm({ ...form, scheduledDate })}
+                    placeholder="Pick a date"
+                  />
+                </div>
+              ) : (
+                <>
                   <div className="space-y-2">
-                    <Label>Weekday</Label>
-                    <Select
-                      value={String(form.weekdays[0] ?? 1)}
-                      onValueChange={(value) => setForm({ ...form, weekdays: [Number(value)] })}
-                    >
+                    <Label>Repeat</Label>
+                    <Select value={form.recurrence} onValueChange={(value) => setForm({ ...form, recurrence: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {WEEKDAYS.map((day) => (
-                          <SelectItem key={day.value} value={String(day.value)}>
-                            {day.label}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="custom">Custom days</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                )}
-                {form.recurrence === 'custom' && (
-                  <div className="space-y-2">
-                    <Label>Days</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {WEEKDAYS.map((day) => (
-                        <label key={day.value} className="flex items-center gap-2 rounded-md border px-2 py-1 text-sm">
-                          <Checkbox checked={form.weekdays.includes(day.value)} onCheckedChange={() => toggleWeekday(day.value)} />
-                          {day.label}
-                        </label>
-                      ))}
+                  {form.recurrence === 'weekly' && (
+                    <div className="space-y-2">
+                      <Label>Weekday</Label>
+                      <Select
+                        value={String(form.weekdays[0] ?? 1)}
+                        onValueChange={(value) => setForm({ ...form, weekdays: [Number(value)] })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {WEEKDAYS.map((day) => (
+                            <SelectItem key={day.value} value={String(day.value)}>
+                              {day.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </div>
-                )}
-              </>
-            )}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Sub tasks</Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setForm((prev) => ({ ...prev, items: [...prev.items, emptyItem()] }))}
-                >
-                  <Plus className="h-4 w-4" />
-                  Add task
-                </Button>
-              </div>
-              {editingId && form.kind === 'recurring' && (
-                <p className="text-xs text-muted-foreground">
-                  Time, add, and remove apply to today and future days. Past days stay as they were.
-                </p>
+                  )}
+                  {form.recurrence === 'custom' && (
+                    <div className="space-y-2">
+                      <Label>Days</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {WEEKDAYS.map((day) => (
+                          <label
+                            key={day.value}
+                            className="flex items-center gap-2 rounded-md border px-2 py-1 text-sm"
+                          >
+                            <Checkbox
+                              checked={form.weekdays.includes(day.value)}
+                              onCheckedChange={() => toggleWeekday(day.value)}
+                            />
+                            {day.label}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
               <div className="space-y-2">
-                {form.items.map((item, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={item.title}
-                      placeholder={`Sub task ${index + 1}`}
-                      onChange={(e) =>
-                        setForm((prev) => {
-                          const items = [...prev.items]
-                          items[index] = { ...items[index], title: e.target.value }
-                          return { ...prev, items }
-                        })
-                      }
-                    />
-                    <TimePicker
-                      value={item.dueTime}
-                      onChange={(dueTime) =>
-                        setForm((prev) => {
-                          const items = [...prev.items]
-                          items[index] = { ...items[index], dueTime }
-                          return { ...prev, items }
-                        })
-                      }
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setForm((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) }))}
-                      aria-label="Remove sub task"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {options.hasReportees ? (
-              <div className="space-y-2">
-                <Label>Assignees</Label>
-                <div className="space-y-2 rounded-md border p-3">
-                  {options.users.map((user) => (
-                    <label key={user.id} className="flex items-center gap-2 text-sm">
-                      <Checkbox
-                        checked={form.assigneeIds.includes(user.id)}
-                        disabled={!editingId && currentUser?.id === user.id}
-                        onCheckedChange={() => toggleAssignee(user.id)}
+                <div className="flex items-center justify-between">
+                  <Label>Sub tasks</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setForm((prev) => ({ ...prev, items: [...prev.items, emptyItem()] }))}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add task
+                  </Button>
+                </div>
+                {editingId && form.kind === 'recurring' && (
+                  <p className="text-xs text-muted-foreground">
+                    Time, add, and remove apply to today and future days. Past days stay as they were.
+                  </p>
+                )}
+                <div className="space-y-2">
+                  {form.items.map((item, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={item.title}
+                        placeholder={`Sub task ${index + 1}`}
+                        onChange={(e) =>
+                          setForm((prev) => {
+                            const items = [...prev.items]
+                            items[index] = { ...items[index], title: e.target.value }
+                            return { ...prev, items }
+                          })
+                        }
                       />
-                      {user.name}
-                      <span className="text-muted-foreground">({user.role})</span>
-                    </label>
+                      <TimePicker
+                        value={item.dueTime}
+                        onChange={(dueTime) =>
+                          setForm((prev) => {
+                            const items = [...prev.items]
+                            items[index] = { ...items[index], dueTime }
+                            return { ...prev, items }
+                          })
+                        }
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setForm((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) }))
+                        }
+                        aria-label="Remove sub task"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
                 </div>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Assigned to you. Add reportees to assign a team.</p>
-            )}
+              {options.hasReportees ? (
+                <div className="space-y-2">
+                  <Label>Assignees</Label>
+                  <div className="space-y-2 rounded-md border p-3">
+                    {options.users.map((user) => (
+                      <label key={user.id} className="flex items-center gap-2 text-sm">
+                        <Checkbox
+                          checked={form.assigneeIds.includes(user.id)}
+                          disabled={!editingId && currentUser?.id === user.id}
+                          onCheckedChange={() => toggleAssignee(user.id)}
+                        />
+                        {user.name}
+                        <span className="text-muted-foreground">({user.role})</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Assigned to you. Add reportees to assign a team.</p>
+              )}
             </div>
             <div className="flex shrink-0 justify-end gap-2 border-t px-6 py-4">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>

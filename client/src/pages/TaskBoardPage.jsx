@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, GripVertical, MoreHorizontal } from 'lucide-react'
 import { taskInstancesApi } from '@/lib/api'
-import { apiMessage, cn } from '@/lib/utils'
+import { apiMessage, cn, dateToYmd, ymdToDate } from '@/lib/utils'
 import { usePermissions } from '@/hooks/usePermissions'
 import { Button } from '@/components/ui/button'
-import { DatePicker, dateToYmd, ymdToDate } from '@/components/ui/date-picker'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -261,14 +261,28 @@ export default function TaskBoardPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Task Board</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Notice board: drag a main task anywhere. Click to open steps.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Notice board: drag a main task anywhere. Click to open steps.
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="icon" className="shrink-0" onClick={() => setDate(addDaysLocalYmd(date, -1))} aria-label="Previous day">
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0"
+            onClick={() => setDate(addDaysLocalYmd(date, -1))}
+            aria-label="Previous day"
+          >
             <ChevronLeft className="size-4" />
           </Button>
           <DatePicker value={date} onChange={setDate} className="h-10 w-[12.5rem] min-w-[12.5rem]" />
-          <Button variant="outline" size="icon" className="shrink-0" onClick={() => setDate(addDaysLocalYmd(date, 1))} aria-label="Next day">
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0"
+            onClick={() => setDate(addDaysLocalYmd(date, 1))}
+            aria-label="Next day"
+          >
             <ChevronRight className="size-4" />
           </Button>
           {date !== today && (
@@ -316,10 +330,16 @@ export default function TaskBoardPage() {
                 >
                   <GripVertical className="h-4 w-4" />
                 </button>
-                <button type="button" className="min-w-0 flex-1 space-y-2 text-left" onClick={() => setExpandedId(expanded ? null : row.id)}>
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 space-y-2 text-left"
+                  onClick={() => setExpandedId(expanded ? null : row.id)}
+                >
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-semibold leading-5">{row.template?.title}</h3>
-                    <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition', expanded && 'rotate-180')} />
+                    <ChevronDown
+                      className={cn('h-4 w-4 shrink-0 text-muted-foreground transition', expanded && 'rotate-180')}
+                    />
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge className={cn('font-semibold', meta.badge)}>{statusLabel}</Badge>
@@ -371,7 +391,9 @@ export default function TaskBoardPage() {
                           <span
                             className={cn(
                               'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]',
-                              lateLook ? 'bg-rose-500/15 text-rose-600 dark:text-rose-300' : 'bg-sky-500/15 text-sky-700 dark:text-sky-300'
+                              lateLook
+                                ? 'bg-rose-500/15 text-rose-600 dark:text-rose-300'
+                                : 'bg-sky-500/15 text-sky-700 dark:text-sky-300'
                             )}
                           >
                             <CalendarDays className="h-3 w-3" />

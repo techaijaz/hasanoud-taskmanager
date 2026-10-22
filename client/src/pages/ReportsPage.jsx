@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { reportsApi } from '@/lib/api'
-import { apiMessage, cn } from '@/lib/utils'
+import { apiMessage, cn, dateToYmd } from '@/lib/utils'
 import { usePermissions } from '@/hooks/usePermissions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { DatePicker, dateToYmd } from '@/components/ui/date-picker'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -15,7 +15,19 @@ const addDays = (date, days) => {
   return next
 }
 
-const emptySummary = { onTime: 0, late: 0, missed: 0, covered: 0, open: 0, scored: 0, assigned: 0, onTimePct: 0, latePct: 0, missedPct: 0, missedLatePct: 0 }
+const emptySummary = {
+  onTime: 0,
+  late: 0,
+  missed: 0,
+  covered: 0,
+  open: 0,
+  scored: 0,
+  assigned: 0,
+  onTimePct: 0,
+  latePct: 0,
+  missedPct: 0,
+  missedLatePct: 0
+}
 
 const outcomeMeta = {
   on_time: { label: 'On time', variant: 'success' },
@@ -90,9 +102,10 @@ export default function ReportsPage() {
 
   const summary = data?.summary || emptySummary
   const trend = data?.trend || []
-  const maxTrend = useMemo(() => Math.max(1, ...trend.map((row) => row.onTime + row.late + row.missed)), [trend])
+  const maxTrend = Math.max(1, ...trend.map((row) => row.onTime + row.late + row.missed))
   const locations = data?.filters?.locations || []
-  const scopeLabel = data?.scope === 'company' ? 'Company-wide' : data?.scope === 'team' ? 'Your team' : 'Your performance'
+  const scopeLabel =
+    data?.scope === 'company' ? 'Company-wide' : data?.scope === 'team' ? 'Your team' : 'Your performance'
   const employees = data?.employees || []
   const locationRows = data?.locations || []
   const history = data?.history || []
@@ -106,7 +119,9 @@ export default function ReportsPage() {
             On-time vs late vs missed. Holiday skips are excluded. {scopeLabel}.
           </p>
         </div>
-        <div className={cn('grid w-full min-w-0 gap-3', isSelf ? 'sm:grid-cols-2 lg:w-auto' : 'sm:grid-cols-3 lg:w-auto')}>
+        <div
+          className={cn('grid w-full min-w-0 gap-3', isSelf ? 'sm:grid-cols-2 lg:w-auto' : 'sm:grid-cols-3 lg:w-auto')}
+        >
           <div className="min-w-0 space-y-1">
             <Label htmlFor="report-from">From</Label>
             <DatePicker id="report-from" value={from} onChange={setFrom} className="w-full min-w-0" />
@@ -146,8 +161,18 @@ export default function ReportsPage() {
           hint={summary.scored ? `${summary.onTime} completed on time` : 'Nothing closed or missed in this range'}
           accent="text-emerald-400"
         />
-        <StatCard label="Late" value={`${summary.latePct}%`} hint={`${summary.late} completed late`} accent="text-amber-400" />
-        <StatCard label="Missed" value={`${summary.missedPct}%`} hint={`${summary.missed} not completed after due time`} accent="text-red-400" />
+        <StatCard
+          label="Late"
+          value={`${summary.latePct}%`}
+          hint={`${summary.late} completed late`}
+          accent="text-amber-400"
+        />
+        <StatCard
+          label="Missed"
+          value={`${summary.missedPct}%`}
+          hint={`${summary.missed} not completed after due time`}
+          accent="text-red-400"
+        />
       </div>
 
       <Card className="min-w-0 overflow-hidden">
@@ -157,17 +182,30 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent className="min-w-0 p-4 pt-2">
           <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" /> On time</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500" /> Late</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-red-500" /> Missed</span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" /> On time
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-amber-500" /> Late
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-red-500" /> Missed
+            </span>
           </div>
           <div className="flex h-36 items-end gap-px overflow-x-auto sm:h-40">
             {trend.map((row) => {
               const total = row.onTime + row.late + row.missed
               const height = total ? Math.max(8, (total / maxTrend) * 100) : 4
               return (
-                <div key={row.date} className="flex min-w-1.5 flex-1 flex-col items-center justify-end sm:min-w-2" title={`${row.date}: ${row.onTime} on time, ${row.late} late, ${row.missed} missed`}>
-                  <div className="flex w-full flex-col justify-end overflow-hidden rounded-t-sm bg-muted" style={{ height: `${height}%` }}>
+                <div
+                  key={row.date}
+                  className="flex min-w-1.5 flex-1 flex-col items-center justify-end sm:min-w-2"
+                  title={`${row.date}: ${row.onTime} on time, ${row.late} late, ${row.missed} missed`}
+                >
+                  <div
+                    className="flex w-full flex-col justify-end overflow-hidden rounded-t-sm bg-muted"
+                    style={{ height: `${height}%` }}
+                  >
                     {total ? (
                       <>
                         <div className="bg-red-500" style={{ height: `${(row.missed / total) * 100}%` }} />
@@ -192,7 +230,8 @@ export default function ReportsPage() {
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-base">{isSelf ? 'Your completion mix' : 'By employee'}</CardTitle>
             <CardDescription>
-              Any one assignee can close a shared task. The closer gets on-time/late; other assignees are Covered, not missed and not zero.
+              Any one assignee can close a shared task. The closer gets on-time/late; other assignees are Covered, not
+              missed and not zero.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -206,11 +245,21 @@ export default function ReportsPage() {
                       <div>
                         <div className="font-medium">{row.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          {row.scored ? `${row.onTimePct}% on time of ${row.scored} closed` : row.open ? `${row.open} still open` : 'No personal closes'}
+                          {row.scored
+                            ? `${row.onTimePct}% on time of ${row.scored} closed`
+                            : row.open
+                              ? `${row.open} still open`
+                              : 'No personal closes'}
                           {row.covered ? ` · ${row.covered} covered` : ''}
                         </div>
                       </div>
-                      <StackedBar onTime={row.onTime} late={row.late} missed={row.missed} covered={row.covered} open={row.open} />
+                      <StackedBar
+                        onTime={row.onTime}
+                        late={row.late}
+                        missed={row.missed}
+                        covered={row.covered}
+                        open={row.open}
+                      />
                       <div className="grid grid-cols-5 gap-2 text-xs">
                         <Metric label="On time" value={row.onTime} className="text-emerald-400" />
                         <Metric label="Late" value={row.late} className="text-amber-400" />
@@ -240,12 +289,22 @@ export default function ReportsPage() {
                           <td className="px-4 py-2">
                             <div>{row.name}</div>
                             <div className="text-xs text-muted-foreground">
-                              {row.scored ? `${row.onTimePct}% on time of ${row.scored} closed` : row.open ? `${row.open} still open` : 'No personal closes'}
+                              {row.scored
+                                ? `${row.onTimePct}% on time of ${row.scored} closed`
+                                : row.open
+                                  ? `${row.open} still open`
+                                  : 'No personal closes'}
                               {row.covered ? ` · ${row.covered} covered` : ''}
                             </div>
                           </td>
                           <td className="min-w-[8rem] px-3 py-2">
-                            <StackedBar onTime={row.onTime} late={row.late} missed={row.missed} covered={row.covered} open={row.open} />
+                            <StackedBar
+                              onTime={row.onTime}
+                              late={row.late}
+                              missed={row.missed}
+                              covered={row.covered}
+                              open={row.open}
+                            />
                           </td>
                           <td className="px-3 py-2 text-right tabular-nums text-emerald-400">{row.onTime}</td>
                           <td className="px-3 py-2 text-right tabular-nums text-amber-400">{row.late}</td>
@@ -279,11 +338,15 @@ export default function ReportsPage() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="font-medium">{row.name}</div>
-                            <div className="text-xs text-muted-foreground">{row.scored} tasks · {row.onTimePct}% on time</div>
+                            <div className="text-xs text-muted-foreground">
+                              {row.scored} tasks · {row.onTimePct}% on time
+                            </div>
                           </div>
                           <div className="shrink-0 text-right text-sm tabular-nums">
                             {row.missedLatePct}%
-                            <div className="text-xs text-muted-foreground">{row.late + row.missed} of {row.scored}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {row.late + row.missed} of {row.scored}
+                            </div>
                           </div>
                         </div>
                         <StackedBar onTime={row.onTime} late={row.late} missed={row.missed} />
@@ -304,12 +367,18 @@ export default function ReportsPage() {
                           <tr key={row.id} className="border-b last:border-0">
                             <td className="px-4 py-2">
                               <div>{row.name}</div>
-                              <div className="text-xs text-muted-foreground">{row.scored} tasks · {row.onTimePct}% on time</div>
+                              <div className="text-xs text-muted-foreground">
+                                {row.scored} tasks · {row.onTimePct}% on time
+                              </div>
                             </td>
-                            <td className="min-w-[8rem] px-3 py-2"><StackedBar onTime={row.onTime} late={row.late} missed={row.missed} /></td>
+                            <td className="min-w-[8rem] px-3 py-2">
+                              <StackedBar onTime={row.onTime} late={row.late} missed={row.missed} />
+                            </td>
                             <td className="px-4 py-2 text-right tabular-nums">
                               {row.missedLatePct}%
-                              <div className="text-xs text-muted-foreground">{row.late + row.missed} of {row.scored}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {row.late + row.missed} of {row.scored}
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -377,8 +446,12 @@ export default function ReportsPage() {
                           <td className="px-3 py-2">{row.title}</td>
                           <td className="px-3 py-2">{row.location}</td>
                           <td className="px-3 py-2 text-muted-foreground">{(row.assignees || []).join(', ') || '—'}</td>
-                          <td className="px-3 py-2">{(row.completedBy || []).join(', ') || (row.outcome === 'missed' ? '—' : 'Unknown')}</td>
-                          <td className="px-4 py-2"><Badge variant={meta.variant}>{meta.label}</Badge></td>
+                          <td className="px-3 py-2">
+                            {(row.completedBy || []).join(', ') || (row.outcome === 'missed' ? '—' : 'Unknown')}
+                          </td>
+                          <td className="px-4 py-2">
+                            <Badge variant={meta.variant}>{meta.label}</Badge>
+                          </td>
                         </tr>
                       )
                     })}

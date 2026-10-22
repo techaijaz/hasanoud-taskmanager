@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            client/package-lock.json
+
+      - name: Install
+        run: |
+          npm ci
+          npm ci --prefix client
+
+      - name: Lint
+        run: |
+          npm run lint
+          npm run lint --prefix client
+
+      - name: Format
+        run: npm run format:check
+
+      - name: Test
+        run: npm test
+
+      - name: Build client
+        run: npm run build --prefix client
+
+      - name: Audit (production dependencies)
+        run: |
+          npm audit --omit=dev
+          npm audit --omit=dev --prefix client

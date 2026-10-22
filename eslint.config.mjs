@@ -3,6 +3,8 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
 
 export default [
+    // client/ is linted by its own oxlint
+    { ignores: ['client/', 'coverage/', 'public/', 'logs/', 'uploads/', 'data/', '.cursor/', '.superpowers/'] },
     eslint.configs.recommended,
     eslintConfigPrettier,
     {
@@ -20,7 +22,8 @@ export default [
                 'error',
                 'single',
                 {
-                    allowTemplateLiterals: true
+                    allowTemplateLiterals: true,
+                    avoidEscape: true
                 }
             ]
         }

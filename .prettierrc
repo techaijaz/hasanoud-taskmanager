@@ -1,10 +1,18 @@
 {
-  "trailingComma": "none",
-  "tabWidth": 4,
-  "semi": false,
-  "singleQuote": true,
-  "bracketSameLine": false,
-  "printWidth": 150,
-  "singleAttributePerLine": true,
-  "endOfLine": "crlf"
+    "trailingComma": "none",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "bracketSameLine": false,
+    "printWidth": 150,
+    "singleAttributePerLine": true,
+    "endOfLine": "lf",
+    "overrides": [
+        {
+            "files": ["*.md", "*.yml", "*.yaml", "*.json"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }

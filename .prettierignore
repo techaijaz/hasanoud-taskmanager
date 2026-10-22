@@ -1,0 +1,4 @@
+package-lock.json
+client/package-lock.json
+prisma/migrations/
+docs/lld/mockups/

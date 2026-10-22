@@ -11,7 +11,7 @@ const PERIODS = ['AM', 'PM']
 
 const pad = (n) => String(n).padStart(2, '0')
 
-export function parseHm(value) {
+function parseHm(value) {
   const match = /^(\d{2}):(\d{2})$/.exec(String(value || ''))
   if (!match) return { hour: 9, minute: 0, period: 'AM' }
   const hour24 = Number(match[1])
@@ -21,7 +21,7 @@ export function parseHm(value) {
   return { hour, minute, period }
 }
 
-export function toHm({ hour, minute, period }) {
+function toHm({ hour, minute, period }) {
   let hour24 = hour % 12
   if (period === 'PM') hour24 += 12
   return `${pad(hour24)}:${pad(minute)}`
@@ -40,7 +40,9 @@ function Column({ items, selected, onSelect, label, formatItem }) {
 
   return (
     <div className="flex min-w-[3.25rem] flex-col">
-      <div className="px-2 py-1.5 text-center text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="px-2 py-1.5 text-center text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
       <div ref={listRef} className="h-44 overflow-y-auto overscroll-contain px-1 pb-1">
         {items.map((item) => {
           const active = item === selected

@@ -6,7 +6,7 @@ import { apiMessage } from '@/lib/utils'
 
 const ThemeContext = createContext(null)
 
-export const applyTheme = (theme) => {
+const applyTheme = (theme) => {
   const next = theme === 'dark' ? 'dark' : 'light'
   document.documentElement.classList.toggle('dark', next === 'dark')
   const meta = document.querySelector('meta[name="theme-color"]')
